@@ -6,11 +6,31 @@ import { products, getAllCategories } from '../../data/products'
 
 export default function ShopPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState('featured')
   const categories = getAllCategories()
 
-  const filteredProducts = selectedCategory === 'all'
+  // Filter by category and search
+  let filteredProducts = selectedCategory === 'all'
     ? products
     : products.filter(p => p.category === selectedCategory)
+
+  // Search functionality
+  if (searchQuery) {
+    filteredProducts = filteredProducts.filter(p =>
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }
+
+  // Sort functionality
+  if (sortBy === 'price-low') {
+    filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price)
+  } else if (sortBy === 'price-high') {
+    filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price)
+  } else if (sortBy === 'name') {
+    filteredProducts = [...filteredProducts].sort((a, b) => a.name.localeCompare(b.name))
+  }
 
   return (
     <div className="bg-nerd-dark min-h-screen py-12">
@@ -21,8 +41,24 @@ export default function ShopPage() {
           <p className="text-gray-400 text-lg">Performance upgrades for your ride-on toys</p>
         </div>
 
-        {/* Filters */}
-        <div className="mb-8">
+        {/* Search Bar */}
+        <div className="mb-8 max-w-2xl mx-auto">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-6 py-4 bg-nerd-gray text-white rounded-lg border border-nerd-light-gray focus:border-nerd-red focus:outline-none"
+            />
+            <svg className="absolute right-4 top-4 w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Filters and Sort */}
+        <div className="mb-8 flex flex-col md:flex-row gap-4 justify-between items-center">
           <div className="flex flex-wrap gap-3 justify-center">
             <button
               onClick={() => setSelectedCategory('all')}
@@ -74,6 +110,22 @@ export default function ShopPage() {
             >
               Electronics
             </button>
+          </div>
+
+          {/* Sort Dropdown */}
+          <div className="flex items-center gap-3">
+            <label htmlFor="sort" className="text-gray-400 text-sm">Sort by:</label>
+            <select
+              id="sort"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="bg-nerd-gray text-white px-4 py-2 rounded border border-nerd-light-gray focus:border-nerd-red focus:outline-none"
+            >
+              <option value="featured">Featured</option>
+              <option value="name">Name (A-Z)</option>
+              <option value="price-low">Price (Low to High)</option>
+              <option value="price-high">Price (High to Low)</option>
+            </select>
           </div>
         </div>
 

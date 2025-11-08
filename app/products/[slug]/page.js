@@ -3,14 +3,25 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { getProductBySlug } from '../../../data/products'
 import { useParams } from 'next/navigation'
+import { useCart } from '../../../context/CartContext'
 
 export default function ProductPage() {
   const params = useParams()
+  const router = useRouter()
   const product = getProductBySlug(params.slug)
+  const { addToCart } = useCart()
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('overview')
+  const [addedToCart, setAddedToCart] = useState(false)
+
+  const handleAddToCart = () => {
+    addToCart(product, quantity)
+    setAddedToCart(true)
+    setTimeout(() => setAddedToCart(false), 2000)
+  }
 
   if (!product) {
     return (
@@ -169,14 +180,26 @@ export default function ProductPage() {
 
             {/* Add to Cart */}
             <button
+              onClick={handleAddToCart}
               disabled={!product.inStock && !product.preOrder}
               className={`w-full py-4 rounded font-bold text-lg transition ${
                 product.inStock || product.preOrder
-                  ? 'btn-primary'
+                  ? addedToCart
+                    ? 'bg-green-600 hover:bg-green-700 text-white'
+                    : 'btn-primary'
                   : 'bg-gray-600 text-gray-400 cursor-not-allowed'
               }`}
             >
-              {product.preOrder ? 'Pre-Order Now' : product.inStock ? 'Add to Cart' : 'Out of Stock'}
+              {addedToCart ? (
+                <span className="flex items-center justify-center">
+                  <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Added to Cart!
+                </span>
+              ) : (
+                product.preOrder ? 'Pre-Order Now' : product.inStock ? 'Add to Cart' : 'Out of Stock'
+              )}
             </button>
 
             {/* Features List */}
