@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-nerd-dark text-white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+  }
+
+  /* Scrollbar styling for dark theme */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-nerd-gray;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-nerd-light-gray rounded;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-nerd-red;
+  }
+}
+
+@layer components {
+  /* Custom utility classes */
+  .btn-primary {
+    @apply bg-nerd-red hover:bg-red-700 text-white font-bold py-3 px-6 rounded transition duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-nerd-gray hover:bg-nerd-light-gray text-white font-bold py-3 px-6 rounded border border-nerd-light-gray transition duration-200;
+  }
+
+  .card {
+    @apply bg-nerd-gray rounded-lg overflow-hidden hover:border-nerd-red border border-transparent transition duration-300;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold mb-8 text-white;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-red-500 to-red-700 bg-clip-text text-transparent;
+  }
+}
