@@ -8,9 +8,11 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
   const [formData, setFormData] = useState({
     name: initialData.name || '',
     slug: initialData.slug || '',
+    sku: initialData.sku || '',
     category: initialData.category || 'wheels',
     price: initialData.price || '',
     originalPrice: initialData.originalPrice || '',
+    cost: initialData.cost || '',
     discount: initialData.discount || 0,
     description: initialData.description || '',
     features: initialData.features?.join('\n') || '',
@@ -22,6 +24,15 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
     requiresDisclaimer: initialData.requiresDisclaimer || false,
     disclaimerText: initialData.disclaimerText || '',
     images: initialData.images || [],
+    // Inventory & Shipping
+    quantity: initialData.quantity !== undefined ? initialData.quantity : 10,
+    lowStockThreshold: initialData.lowStockThreshold || 3,
+    weight: initialData.weight || '',
+    weightUnit: initialData.weightUnit || 'lb',
+    length: initialData.length || '',
+    width: initialData.width || '',
+    height: initialData.height || '',
+    dimensionUnit: initialData.dimensionUnit || 'in',
   })
 
   const [uploading, setUploading] = useState(false)
@@ -119,10 +130,20 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
       const productData = {
         ...formData,
         price: parseFloat(formData.price),
+        cost: formData.cost ? parseFloat(formData.cost) : null,
         originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
         discount: parseInt(formData.discount) || 0,
         features,
         specifications,
+        // Inventory
+        quantity: parseInt(formData.quantity) || 0,
+        lowStockThreshold: parseInt(formData.lowStockThreshold) || 0,
+        inStock: parseInt(formData.quantity) > 0, // Auto-set based on quantity
+        // Shipping
+        weight: formData.weight ? parseFloat(formData.weight) : null,
+        length: formData.length ? parseFloat(formData.length) : null,
+        width: formData.width ? parseFloat(formData.width) : null,
+        height: formData.height ? parseFloat(formData.height) : null,
       }
 
       await onSubmit(productData)
@@ -168,6 +189,19 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
           </div>
 
           <div>
+            <label className="block text-white font-semibold mb-2">SKU</label>
+            <input
+              type="text"
+              name="sku"
+              value={formData.sku}
+              onChange={handleChange}
+              className="w-full px-4 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red"
+              placeholder="PPWK-001"
+            />
+            <p className="text-gray-400 text-xs mt-1">Stock Keeping Unit for inventory tracking</p>
+          </div>
+
+          <div>
             <label className="block text-white font-semibold mb-2">Category *</label>
             <select
               name="category"
@@ -201,11 +235,11 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
 
       {/* Pricing */}
       <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6">
-        <h3 className="text-xl font-bold text-white mb-4">Pricing</h3>
+        <h3 className="text-xl font-bold text-white mb-4">Pricing & Costs</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-white font-semibold mb-2">Price *</label>
+            <label className="block text-white font-semibold mb-2">Selling Price *</label>
             <input
               type="number"
               name="price"
@@ -219,6 +253,20 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
           </div>
 
           <div>
+            <label className="block text-white font-semibold mb-2">Cost (COGS)</label>
+            <input
+              type="number"
+              name="cost"
+              step="0.01"
+              value={formData.cost}
+              onChange={handleChange}
+              className="w-full px-4 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red"
+              placeholder="25.00"
+            />
+            <p className="text-gray-400 text-xs mt-1">Your cost to make/buy (for profit tracking)</p>
+          </div>
+
+          <div>
             <label className="block text-white font-semibold mb-2">Original Price (optional)</label>
             <input
               type="number"
@@ -229,6 +277,7 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
               className="w-full px-4 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red"
               placeholder="69.99"
             />
+            <p className="text-gray-400 text-xs mt-1">For showing strikethrough price</p>
           </div>
 
           <div>
@@ -245,24 +294,84 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
             />
           </div>
         </div>
+
+        {/* Profit Margin Calculation */}
+        {formData.price && formData.cost && (
+          <div className="bg-nerd-dark rounded p-3 border border-nerd-light-gray">
+            <p className="text-gray-400 text-sm mb-1">Profit Margin:</p>
+            <p className="text-white text-lg font-bold">
+              ${(parseFloat(formData.price) - parseFloat(formData.cost)).toFixed(2)}
+              <span className="text-gray-400 text-sm ml-2">
+                ({(((parseFloat(formData.price) - parseFloat(formData.cost)) / parseFloat(formData.price)) * 100).toFixed(1)}%)
+              </span>
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Inventory Status */}
+      {/* Inventory & Stock */}
       <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6">
-        <h3 className="text-xl font-bold text-white mb-4">Inventory Status</h3>
+        <h3 className="text-xl font-bold text-white mb-4">Inventory & Stock</h3>
 
-        <div className="space-y-4">
-          <label className="flex items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-white font-semibold mb-2">Quantity on Hand *</label>
             <input
-              type="checkbox"
-              name="inStock"
-              checked={formData.inStock}
+              type="number"
+              name="quantity"
+              required
+              min="0"
+              value={formData.quantity}
               onChange={handleChange}
-              className="w-5 h-5 text-nerd-red bg-nerd-dark border-nerd-light-gray rounded focus:ring-nerd-red"
+              className="w-full px-4 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red"
+              placeholder="10"
             />
-            <span className="ml-3 text-white">In Stock</span>
-          </label>
+            <p className="text-gray-400 text-xs mt-1">Current inventory count</p>
+          </div>
 
+          <div>
+            <label className="block text-white font-semibold mb-2">Low Stock Alert</label>
+            <input
+              type="number"
+              name="lowStockThreshold"
+              min="0"
+              value={formData.lowStockThreshold}
+              onChange={handleChange}
+              className="w-full px-4 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red"
+              placeholder="3"
+            />
+            <p className="text-gray-400 text-xs mt-1">Alert when inventory falls below this number</p>
+          </div>
+        </div>
+
+        {/* Stock Status Indicator */}
+        <div className="bg-nerd-dark rounded p-3 border border-nerd-light-gray mb-4">
+          <p className="text-gray-400 text-sm mb-1">Stock Status:</p>
+          {formData.quantity > formData.lowStockThreshold ? (
+            <p className="text-green-400 font-semibold flex items-center">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              In Stock ({formData.quantity} units)
+            </p>
+          ) : formData.quantity > 0 ? (
+            <p className="text-yellow-400 font-semibold flex items-center">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Low Stock ({formData.quantity} units remaining)
+            </p>
+          ) : (
+            <p className="text-red-400 font-semibold flex items-center">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Out of Stock
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-3">
           <label className="flex items-center">
             <input
               type="checkbox"
@@ -271,7 +380,7 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
               onChange={handleChange}
               className="w-5 h-5 text-nerd-red bg-nerd-dark border-nerd-light-gray rounded focus:ring-nerd-red"
             />
-            <span className="ml-3 text-white">Pre-Order</span>
+            <span className="ml-3 text-white">Allow Pre-Orders (when out of stock)</span>
           </label>
 
           {formData.preOrder && (
@@ -298,6 +407,74 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
             />
             <span className="ml-3 text-white">Free Shipping</span>
           </label>
+        </div>
+      </div>
+
+      {/* Shipping & Dimensions */}
+      <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6">
+        <h3 className="text-xl font-bold text-white mb-4">Shipping & Dimensions</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-white font-semibold mb-2">Weight</label>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                name="weight"
+                step="0.01"
+                value={formData.weight}
+                onChange={handleChange}
+                className="flex-1 px-4 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red"
+                placeholder="2.5"
+              />
+              <select
+                name="weightUnit"
+                value={formData.weightUnit}
+                onChange={handleChange}
+                className="px-4 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red"
+              >
+                <option value="lb">lb</option>
+                <option value="oz">oz</option>
+                <option value="kg">kg</option>
+                <option value="g">g</option>
+              </select>
+            </div>
+            <p className="text-gray-400 text-xs mt-1">For shipping calculations</p>
+          </div>
+
+          <div>
+            <label className="block text-white font-semibold mb-2">Dimensions (L × W × H)</label>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                name="length"
+                step="0.1"
+                value={formData.length}
+                onChange={handleChange}
+                className="w-1/3 px-2 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red text-center"
+                placeholder="12"
+              />
+              <input
+                type="number"
+                name="width"
+                step="0.1"
+                value={formData.width}
+                onChange={handleChange}
+                className="w-1/3 px-2 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red text-center"
+                placeholder="8"
+              />
+              <input
+                type="number"
+                name="height"
+                step="0.1"
+                value={formData.height}
+                onChange={handleChange}
+                className="w-1/3 px-2 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red text-center"
+                placeholder="4"
+              />
+            </div>
+            <p className="text-gray-400 text-xs mt-1">In {formData.dimensionUnit} (for packaging)</p>
+          </div>
         </div>
       </div>
 
