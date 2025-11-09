@@ -1,0 +1,260 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { useAuth } from '../../../context/AuthContext'
+import { useRouter } from 'next/navigation'
+import ProtectedRoute from '../../../components/ProtectedRoute'
+import { db } from '../../../lib/firebase'
+import { collection, getDocs } from 'firebase/firestore'
+
+function DashboardContent() {
+  const { user, signOut } = useAuth()
+  const router = useRouter()
+  const [stats, setStats] = useState({
+    totalProducts: 0,
+    inStockProducts: 0,
+    preOrderProducts: 0,
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadStats()
+  }, [])
+
+  const loadStats = async () => {
+    try {
+      const productsRef = collection(db, 'products')
+      const snapshot = await getDocs(productsRef)
+
+      let inStock = 0
+      let preOrder = 0
+
+      snapshot.forEach((doc) => {
+        const product = doc.data()
+        if (product.inStock) inStock++
+        if (product.preOrder) preOrder++
+      })
+
+      setStats({
+        totalProducts: snapshot.size,
+        inStockProducts: inStock,
+        preOrderProducts: preOrder,
+      })
+    } catch (error) {
+      console.error('Error loading stats:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSignOut = async () => {
+    await signOut()
+    router.push('/admin/login')
+  }
+
+  return (
+    <div className="min-h-screen bg-nerd-dark">
+      {/* Header */}
+      <div className="bg-nerd-gray border-b border-nerd-light-gray">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-white">
+                Admin Dashboard
+              </h1>
+              <p className="text-gray-400 mt-1">Welcome back, {user?.email}</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Link href="/" className="text-gray-400 hover:text-white transition">
+                View Site
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="bg-nerd-light-gray hover:bg-nerd-red text-white px-4 py-2 rounded transition"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm font-semibold">Total Products</p>
+                <p className="text-4xl font-bold text-white mt-2">
+                  {loading ? '...' : stats.totalProducts}
+                </p>
+              </div>
+              <div className="bg-nerd-red/20 p-3 rounded-lg">
+                <svg className="w-8 h-8 text-nerd-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm font-semibold">In Stock</p>
+                <p className="text-4xl font-bold text-white mt-2">
+                  {loading ? '...' : stats.inStockProducts}
+                </p>
+              </div>
+              <div className="bg-green-500/20 p-3 rounded-lg">
+                <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm font-semibold">Pre-Orders</p>
+                <p className="text-4xl font-bold text-white mt-2">
+                  {loading ? '...' : stats.preOrderProducts}
+                </p>
+              </div>
+              <div className="bg-yellow-500/20 p-3 rounded-lg">
+                <svg className="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-bold text-white mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link
+              href="/admin/products"
+              className="bg-nerd-dark hover:bg-nerd-light-gray border border-nerd-light-gray rounded-lg p-4 transition group"
+            >
+              <div className="flex items-center">
+                <div className="bg-nerd-red/20 p-2 rounded group-hover:bg-nerd-red/30 transition">
+                  <svg className="w-6 h-6 text-nerd-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-white font-semibold">Manage Products</p>
+                  <p className="text-gray-400 text-sm">Add, edit, or delete</p>
+                </div>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/products/new"
+              className="bg-nerd-dark hover:bg-nerd-light-gray border border-nerd-light-gray rounded-lg p-4 transition group"
+            >
+              <div className="flex items-center">
+                <div className="bg-green-500/20 p-2 rounded group-hover:bg-green-500/30 transition">
+                  <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-white font-semibold">Add Product</p>
+                  <p className="text-gray-400 text-sm">Create new listing</p>
+                </div>
+              </div>
+            </Link>
+
+            <button
+              onClick={loadStats}
+              className="bg-nerd-dark hover:bg-nerd-light-gray border border-nerd-light-gray rounded-lg p-4 transition group text-left"
+            >
+              <div className="flex items-center">
+                <div className="bg-blue-500/20 p-2 rounded group-hover:bg-blue-500/30 transition">
+                  <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-white font-semibold">Refresh Stats</p>
+                  <p className="text-gray-400 text-sm">Update dashboard</p>
+                </div>
+              </div>
+            </button>
+
+            <Link
+              href="/"
+              className="bg-nerd-dark hover:bg-nerd-light-gray border border-nerd-light-gray rounded-lg p-4 transition group"
+            >
+              <div className="flex items-center">
+                <div className="bg-purple-500/20 p-2 rounded group-hover:bg-purple-500/30 transition">
+                  <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-white font-semibold">View Store</p>
+                  <p className="text-gray-400 text-sm">See live site</p>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* Recent Activity / Instructions */}
+        <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6">
+          <h2 className="text-xl font-bold text-white mb-4">Getting Started</h2>
+          <div className="space-y-4 text-gray-300">
+            <div className="flex items-start">
+              <div className="bg-nerd-red text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
+                1
+              </div>
+              <div className="ml-3">
+                <p className="font-semibold text-white">Migrate existing products to Firestore</p>
+                <p className="text-sm text-gray-400">
+                  Go to <Link href="/admin/products" className="text-nerd-red hover:underline">Products</Link> and use the migration tool to import your current products
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <div className="bg-nerd-red text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
+                2
+              </div>
+              <div className="ml-3">
+                <p className="font-semibold text-white">Add or edit products</p>
+                <p className="text-sm text-gray-400">
+                  Use the product management interface to update listings, prices, and inventory
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <div className="bg-nerd-red text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
+                3
+              </div>
+              <div className="ml-3">
+                <p className="font-semibold text-white">Upload product images</p>
+                <p className="text-sm text-gray-400">
+                  When editing products, you can upload images directly to Firebase Storage
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function AdminDashboard() {
+  return (
+    <ProtectedRoute>
+      <DashboardContent />
+    </ProtectedRoute>
+  )
+}

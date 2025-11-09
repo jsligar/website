@@ -2,6 +2,7 @@ import './globals.css'
 import Navigation from '../components/Navigation'
 import Footer from '../components/Footer'
 import { CartProvider } from '../context/CartContext'
+import { AuthProvider } from '../context/AuthContext'
 
 export const metadata = {
   title: 'NerdbillyFab | Performance Ride-On Upgrades',
@@ -18,13 +19,15 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
       </head>
       <body>
-        <CartProvider>
-          <Navigation />
-          <main className="min-h-screen">
-            {children}
-          </main>
-          <Footer />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <Navigation />
+            <main className="min-h-screen">
+              {children}
+            </main>
+            <Footer />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   )

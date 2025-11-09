@@ -1,6 +1,15 @@
 # Firebase Deployment Guide - NerdbillyFab Website
 
-Complete instructions for deploying the NerdbillyFab e-commerce website to Firebase Hosting.
+Complete instructions for deploying the NerdbillyFab e-commerce website to Firebase Hosting with admin dashboard.
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Initial Setup](#initial-setup)
+- [Admin Dashboard Setup](#admin-dashboard-setup)
+- [Deployment Workflow](#deployment-workflow)
+- [Custom Domain Setup](#custom-domain-setup)
+- [Troubleshooting](#troubleshooting)
 
 ## Prerequisites
 
@@ -96,37 +105,195 @@ Edit `firebase.json` to use Next.js properly:
 
 ---
 
+## Admin Dashboard Setup
+
+Your website includes a complete admin dashboard for managing products. Follow these steps to enable it.
+
+### 1. Enable Firebase Services
+
+In the [Firebase Console](https://console.firebase.google.com/), enable these services for your project:
+
+#### Authentication
+1. Go to **Build → Authentication**
+2. Click **"Get Started"**
+3. Enable **"Email/Password"** sign-in provider
+4. Click **"Save"**
+
+#### Firestore Database
+1. Go to **Build → Firestore Database**
+2. Click **"Create database"**
+3. Select **"Start in production mode"** (we'll add rules next)
+4. Choose a location (e.g., `us-central1`)
+5. Click **"Enable"**
+
+#### Storage
+1. Go to **Build → Storage**
+2. Click **"Get Started"**
+3. Select **"Start in production mode"**
+4. Use the same location as Firestore
+5. Click **"Done"**
+
+### 2. Configure Firebase Security Rules
+
+#### Firestore Rules
+
+Go to **Firestore Database → Rules** and paste:
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /products/{productId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+  }
+}
+```
+
+Click **"Publish"**
+
+#### Storage Rules
+
+Go to **Storage → Rules** and paste:
+
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /products/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
+```
+
+Click **"Publish"**
+
+### 3. Get Firebase Configuration
+
+1. Go to **Project Settings** (gear icon) → **General**
+2. Scroll to **"Your apps"**
+3. Click **"Web"** (</> icon)
+4. Register app name: `NerdbillyFab`
+5. Copy the `firebaseConfig` values
+
+### 4. Create Environment Variables
+
+Create `.env.local` file in your project root:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Edit `.env.local` and add your Firebase values:
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSy...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=nerdbillyfab.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=nerdbillyfab
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=nerdbillyfab.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
+NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abc123
+```
+
+### 5. Create Admin User
+
+Using Firebase CLI:
+
+```bash
+firebase auth:create --email admin@nerdbillyfab.com --password YourSecurePassword123
+```
+
+Or via Firebase Console:
+1. Go to **Authentication → Users**
+2. Click **"Add user"**
+3. Enter email and password
+4. Click **"Add user"**
+
+### 6. Test Admin Access
+
+Start development server:
+
+```bash
+npm run dev
+```
+
+Visit `http://localhost:3000/admin/login` and log in with your admin credentials.
+
+### 7. Migrate Products to Firestore
+
+1. After logging in, go to the Dashboard
+2. Click **"Manage Products"**
+3. You'll see a migration prompt
+4. Click **"Migrate X Products"** to copy your products to Firestore
+5. Do this only once
+
+**Note**: See `ADMIN_GUIDE.md` for detailed admin panel documentation.
+
+---
+
 ## Deployment Workflow
 
-### Step 1: Install Dependencies
+### Quick Deploy (Recommended)
+
+Deploy everything with one command:
+
+```bash
+npm run deploy
+```
+
+This automatically:
+1. Syncs products from Firestore to code
+2. Builds the Next.js static site
+3. Deploys to Firebase Hosting
+
+**Use this after editing products in the admin panel!**
+
+### Manual Deployment (Step by Step)
+
+If you prefer manual control:
+
+#### Step 1: Install Dependencies
 
 ```bash
 npm install
 ```
 
-### Step 2: Build the Website
+#### Step 2: Sync Products from Firestore (if using admin panel)
+
+```bash
+npm run sync-products
+```
+
+This updates `data/products.js` with your latest Firestore data.
+
+**Skip this step if you haven't edited products in the admin panel.**
+
+#### Step 3: Build the Website
 
 ```bash
 npm run build
 ```
 
-This creates an optimized production build in `.next/` directory.
+This creates an optimized production build in `out/` directory.
 
 **Expected output:**
 ```
 ✓ Compiled successfully
-✓ Generating static pages (9/9)
+✓ Generating static pages (18/18)
 ```
 
-### Step 3: Test Build Locally (Optional)
+#### Step 4: Test Build Locally (Optional)
 
 ```bash
-npm start
+npx serve out
 ```
 
 Visit `http://localhost:3000` to verify the production build works.
 
-### Step 4: Deploy to Firebase
+#### Step 5: Deploy to Firebase
 
 ```bash
 firebase deploy --only hosting

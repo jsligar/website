@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "export": "next build && next export",
-    "deploy": "npm run build && firebase deploy --only hosting"
+    "sync-products": "node scripts/sync-products.js",
+    "deploy": "npm run sync-products && npm run build && firebase deploy --only hosting"
   },
   "repository": {
     "type": "git",
@@ -22,12 +23,14 @@
     "@stripe/stripe-js": "^8.3.0",
     "eslint": "^9.39.1",
     "eslint-config-next": "^16.0.1",
+    "firebase": "^12.5.0",
     "next": "^16.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",
+    "firebase-admin": "^13.6.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.18"
   }
