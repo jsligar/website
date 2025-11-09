@@ -15,7 +15,7 @@ NerdbillyFab sells garage-built upgrades for Peg Perego and Power Wheels ride-on
 - **Framework**: Next.js 16 (App Router)
 - **Styling**: Tailwind CSS
 - **Payments**: Stripe
-- **Deployment**: Vercel (recommended) or any Node.js host
+- **Deployment**: Firebase Hosting (recommended) or Vercel
 
 ## Getting Started
 
