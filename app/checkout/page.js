@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useCart } from '../../context/CartContext'
-import getStripe from '../../lib/stripe'
+import { createOrder, decrementInventory, getOrCreateCustomer } from '../../lib/orders'
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { cart, getSubtotal, getDiscount, getTotal, couponCode, discount } = useCart()
+  const { cart, getSubtotal, getDiscount, getTotal, couponCode, discount, clearCart } = useCart()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
@@ -40,30 +40,80 @@ export default function CheckoutPage() {
     setLoading(true)
 
     try {
-      // TODO: Create Stripe checkout session
-      // This requires a backend endpoint
-      alert('Checkout integration coming soon! For now, orders can be placed via Etsy.')
-
-      // Placeholder for Stripe integration:
-      /*
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          cart,
-          customer: formData,
-          couponCode,
-        }),
+      // Get or create customer
+      const customer = await getOrCreateCustomer({
+        email: formData.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+        addresses: [{
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+          country: formData.country,
+          isDefault: true,
+        }],
       })
 
-      const { sessionId } = await response.json()
-      const stripe = await getStripe()
-      await stripe.redirectToCheckout({ sessionId })
-      */
+      // Prepare order items
+      const items = cart.map(item => ({
+        productId: item.id,
+        productName: item.name,
+        productSlug: item.slug,
+        sku: item.sku || '',
+        price: item.price,
+        quantity: item.quantity,
+        total: item.price * item.quantity,
+        image: item.images?.[0] || null,
+      }))
+
+      // Calculate totals
+      const subtotal = getSubtotal()
+      const discountAmount = getDiscount()
+      const total = getTotal()
+
+      // Create order
+      const order = await createOrder({
+        customerId: customer.id,
+        customer: {
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+        },
+        shippingAddress: {
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+          country: formData.country,
+        },
+        items,
+        subtotal,
+        discount: discountAmount,
+        couponCode: couponCode || null,
+        shippingCost: 0, // Free shipping
+        total,
+        paymentStatus: 'pending', // Will be 'paid' when Stripe is connected
+        paymentMethod: 'pending', // Will be 'stripe' when connected
+        notes: 'Order created without payment - Stripe integration pending',
+      })
+
+      // Decrement inventory for each product
+      for (const item of cart) {
+        await decrementInventory(item.slug, item.quantity)
+      }
+
+      // Clear cart
+      clearCart()
+
+      // Redirect to success page
+      router.push(`/order-confirmation?orderId=${order.id}`)
 
     } catch (error) {
       console.error('Checkout error:', error)
-      alert('Checkout failed. Please try again.')
+      alert('Order creation failed: ' + error.message)
     } finally {
       setLoading(false)
     }
@@ -78,25 +128,16 @@ export default function CheckoutPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-4xl font-bold text-white mb-8">Checkout</h1>
 
-        {/* Coming Soon Notice */}
-        <div className="bg-yellow-900/20 border border-yellow-500 rounded-lg p-6 mb-8">
+        {/* Test Mode Notice */}
+        <div className="bg-blue-900/20 border border-blue-500 rounded-lg p-4 mb-8">
           <div className="flex items-start">
-            <svg className="w-6 h-6 text-yellow-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-blue-400 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div>
-              <h3 className="text-yellow-400 font-bold mb-2">Direct Checkout Coming Soon</h3>
-              <p className="text-gray-300 mb-2">
-                We're setting up secure payment processing. For now, you can purchase these products on our Etsy shop.
+              <p className="text-blue-300 text-sm">
+                <strong>Note:</strong> Payment processing is being configured. Orders will be created but not charged. You'll receive order confirmation once payment is connected.
               </p>
-              <a
-                href="https://www.etsy.com/shop/NerdbillyFab"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-4 py-2 rounded transition"
-              >
-                Shop on Etsy →
-              </a>
             </div>
           </div>
         </div>
@@ -252,7 +293,7 @@ export default function CheckoutPage() {
                     : 'btn-primary'
                 }`}
               >
-                {loading ? 'Processing...' : 'Continue to Payment'}
+                {loading ? 'Creating Order...' : 'Place Order'}
               </button>
             </form>
           </div>
@@ -265,10 +306,10 @@ export default function CheckoutPage() {
               {/* Cart Items */}
               <div className="space-y-4 mb-6">
                 {cart.map((item) => (
-                  <div key={item.product.id} className="flex gap-4">
+                  <div key={item.id} className="flex gap-4">
                     <div className="w-16 h-16 bg-nerd-dark rounded flex items-center justify-center flex-shrink-0">
-                      {item.product.images?.[0] ? (
-                        <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover rounded" />
+                      {item.images?.[0] ? (
+                        <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover rounded" />
                       ) : (
                         <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -276,9 +317,9 @@ export default function CheckoutPage() {
                       )}
                     </div>
                     <div className="flex-1">
-                      <p className="text-white font-semibold text-sm">{item.product.name}</p>
+                      <p className="text-white font-semibold text-sm">{item.name}</p>
                       <p className="text-gray-400 text-sm">Qty: {item.quantity}</p>
-                      <p className="text-nerd-red font-bold">${(item.product.price * item.quantity).toFixed(2)}</p>
+                      <p className="text-nerd-red font-bold">${(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                   </div>
                 ))}
