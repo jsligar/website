@@ -1,4 +1,27 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { getAllVideos } from '../../lib/videos'
+
 export default function ResourcesPage() {
+  const [videos, setVideos] = useState([])
+  const [videosLoading, setVideosLoading] = useState(true)
+
+  useEffect(() => {
+    loadVideos()
+  }, [])
+
+  const loadVideos = async () => {
+    try {
+      const videosList = await getAllVideos()
+      setVideos(videosList)
+    } catch (error) {
+      console.error('Error loading videos:', error)
+    } finally {
+      setVideosLoading(false)
+    }
+  }
+
   return (
     <div className="bg-nerd-dark min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -91,130 +114,51 @@ export default function ResourcesPage() {
             Watch step-by-step video guides for installation, troubleshooting, and product demos. New videos added regularly.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Video 1 - Wheel Adapter Installation */}
-            <div className="bg-nerd-gray rounded-lg overflow-hidden group">
-              <div className="aspect-video bg-nerd-light-gray relative">
-                {/* Placeholder for video embed */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-nerd-red rounded-full flex items-center justify-center mx-auto mb-3">
-                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </div>
-                    <p className="text-gray-400 text-sm">Coming Soon</p>
+          {videosLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-nerd-red mx-auto mb-4"></div>
+              <p className="text-gray-400">Loading videos...</p>
+            </div>
+          ) : videos.length === 0 ? (
+            <div className="bg-nerd-gray rounded-lg p-12 text-center">
+              <svg className="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <h3 className="text-xl font-bold text-white mb-2">Videos Coming Soon</h3>
+              <p className="text-gray-400">
+                We're working on video tutorials to help you with installation and troubleshooting. Check back soon!
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {videos.map((video) => (
+                <div key={video.id} className="bg-nerd-gray rounded-lg overflow-hidden group">
+                  <div className="aspect-video bg-nerd-light-gray relative">
+                    <iframe
+                      className="w-full h-full"
+                      src={`https://www.youtube.com/embed/${video.youtubeId}`}
+                      title={video.title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="text-xl font-bold text-white mb-2">{video.title}</h3>
+                    <p className="text-gray-400 text-sm mb-3">{video.description}</p>
+                    {video.duration && (
+                      <div className="flex items-center text-gray-500 text-sm">
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {video.duration}
+                      </div>
+                    )}
                   </div>
                 </div>
-                {/* When you have videos, replace the above with:
-                <iframe
-                  className="w-full h-full"
-                  src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
-                  title="Video Title"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-                */}
-              </div>
-              <div className="p-5">
-                <h3 className="text-xl font-bold text-white mb-2">Wheel Adapter Installation</h3>
-                <p className="text-gray-400 text-sm mb-3">
-                  Complete walkthrough for installing ABS-GF wheel adapters on Peg Perego models. Covers tools needed, step-by-step process, and common tips.
-                </p>
-                <div className="flex items-center text-gray-500 text-sm">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  ~8 minutes
-                </div>
-              </div>
+              ))}
             </div>
-
-            {/* Video 2 - Battery Adapter Setup */}
-            <div className="bg-nerd-gray rounded-lg overflow-hidden group">
-              <div className="aspect-video bg-nerd-light-gray relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-nerd-red rounded-full flex items-center justify-center mx-auto mb-3">
-                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </div>
-                    <p className="text-gray-400 text-sm">Coming Soon</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-5">
-                <h3 className="text-xl font-bold text-white mb-2">DeWalt Battery Adapter Setup</h3>
-                <p className="text-gray-400 text-sm mb-3">
-                  Quick guide for installing the DeWalt battery adapter plate. Shows proper connection, safety checks, and voltage monitoring.
-                </p>
-                <div className="flex items-center text-gray-500 text-sm">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  ~5 minutes
-                </div>
-              </div>
-            </div>
-
-            {/* Video 3 - Troubleshooting Common Issues */}
-            <div className="bg-nerd-gray rounded-lg overflow-hidden group">
-              <div className="aspect-video bg-nerd-light-gray relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-nerd-red rounded-full flex items-center justify-center mx-auto mb-3">
-                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </div>
-                    <p className="text-gray-400 text-sm">Coming Soon</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-5">
-                <h3 className="text-xl font-bold text-white mb-2">Troubleshooting Common Issues</h3>
-                <p className="text-gray-400 text-sm mb-3">
-                  Solutions for common problems: wobbly wheels, adapter fitment, and making adjustments for optimal performance.
-                </p>
-                <div className="flex items-center text-gray-500 text-sm">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  ~6 minutes
-                </div>
-              </div>
-            </div>
-
-            {/* Video 4 - Product Comparison */}
-            <div className="bg-nerd-gray rounded-lg overflow-hidden group">
-              <div className="aspect-video bg-nerd-light-gray relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-nerd-red rounded-full flex items-center justify-center mx-auto mb-3">
-                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </div>
-                    <p className="text-gray-400 text-sm">Coming Soon</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-5">
-                <h3 className="text-xl font-bold text-white mb-2">Stock vs Upgraded Wheels Demo</h3>
-                <p className="text-gray-400 text-sm mb-3">
-                  Side-by-side comparison showing performance difference between stock plastic wheels and upgraded steel wheels with pneumatic tires.
-                </p>
-                <div className="flex items-center text-gray-500 text-sm">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  ~4 minutes
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
 
           <div className="mt-8 bg-nerd-gray rounded-lg p-6">
             <div className="flex items-start">
