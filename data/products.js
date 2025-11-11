@@ -1,3 +1,6 @@
+// Import Razors-Edge products from separate catalog
+import { razorsEdgeProducts } from './razors-edge-products.js'
+
 export const products = [
   {
     id: 'peg-perego-front-rear-wheel-kit',
@@ -270,47 +273,9 @@ export const products = [
     images: ['/images/products/13-steel-wheel-kit-1.jpg'],
     freeShipping: true
   },
-  {
-    id: 'razors-edge',
-    name: 'Razors-Edge Electronic Transmission System',
-    slug: 'razors-edge',
-    category: 'electronics',
-    price: 599.99,
-    originalPrice: null,
-    discount: 0,
-    description: 'Transform your ride-on into an advanced electric vehicle. 6-speed electronic transmission with GPS geofencing, WiFi telemetry, dual motor control, and comprehensive safety systems. Code complete - ready for hardware testing.',
-    features: [
-      '6-Speed Electronic Transmission (Park, 1st, 2nd, 3rd, Eco, Sport+)',
-      'Dual independent motor control',
-      'GPS geofencing and speed limiting',
-      'WiFi remote monitoring and telemetry',
-      '60V Li-ion power system',
-      'Multi-layer safety features',
-      'OLED display with rotary encoder',
-      'Overcurrent and low voltage protection',
-      'Motor stall detection',
-      'Free shipping'
-    ],
-    specifications: {
-      'Microcontroller': 'ESP32 Dual-Core',
-      'Motor Control': 'Dual Cytron MDD20A drivers',
-      'Voltage System': '60V Li-ion',
-      'Current Monitoring': '3× INA228 sensors (0.001Ω shunts)',
-      'Display': '128×64 OLED with rotary encoder',
-      'Connectivity': 'WiFi telemetry',
-      'GPS': 'Geofencing & speed limiting',
-      'Safety': 'Low voltage cutoff, overcurrent protection, stall detection',
-      'Installation Time': '4-6 hours',
-      'Difficulty': 'Advanced (Qualified individuals only)'
-    },
-    inStock: false,
-    preOrder: true,
-    availableDate: 'Coming Soon',
-    images: ['/images/products/razors-edge-1.jpg'],
-    freeShipping: true,
-    requiresDisclaimer: true,
-    disclaimerText: 'WARNING: This system operates at 60V with Li-ion batteries. Installation and operation require electrical and mechanical expertise. Only qualified individuals should attempt this project. Improper installation or use can result in serious injury or death. By purchasing, you acknowledge all risks and assume full responsibility.'
-  }
+  // Note: Razors-Edge products moved to separate catalog (razors-edge-products.js)
+  // The original basic listing is replaced with the comprehensive product catalog
+  ...razorsEdgeProducts
 ]
 
 export function getProductBySlug(slug) {
