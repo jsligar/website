@@ -52,6 +52,11 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-4">Resources</h4>
             <ul className="space-y-2">
               <li>
+                <Link href="/resources#videos" className="text-gray-400 hover:text-white text-sm transition">
+                  How-To Videos
+                </Link>
+              </li>
+              <li>
                 <Link href="/resources#guides" className="text-gray-400 hover:text-white text-sm transition">
                   Installation Guides
                 </Link>

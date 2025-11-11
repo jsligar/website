@@ -6,7 +6,7 @@ export default function ResourcesPage() {
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Resources</h1>
           <p className="text-gray-400 text-lg">
-            Installation guides, compatibility charts, and answers to common questions
+            How-to videos, installation guides, compatibility charts, and answers to common questions
           </p>
         </div>
 
@@ -81,6 +81,155 @@ export default function ResourcesPage() {
             <p className="text-gray-400">
               Detailed installation instructions are included with every order. Need help? <a href="/about#contact" className="text-nerd-red hover:text-red-400">Contact us</a>.
             </p>
+          </div>
+        </section>
+
+        {/* How-To Videos */}
+        <section id="videos" className="mb-16">
+          <h2 className="text-3xl font-bold text-white mb-8">How-To Videos</h2>
+          <p className="text-gray-400 mb-8">
+            Watch step-by-step video guides for installation, troubleshooting, and product demos. New videos added regularly.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Video 1 - Wheel Adapter Installation */}
+            <div className="bg-nerd-gray rounded-lg overflow-hidden group">
+              <div className="aspect-video bg-nerd-light-gray relative">
+                {/* Placeholder for video embed */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-nerd-red rounded-full flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                    <p className="text-gray-400 text-sm">Coming Soon</p>
+                  </div>
+                </div>
+                {/* When you have videos, replace the above with:
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+                  title="Video Title"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+                */}
+              </div>
+              <div className="p-5">
+                <h3 className="text-xl font-bold text-white mb-2">Wheel Adapter Installation</h3>
+                <p className="text-gray-400 text-sm mb-3">
+                  Complete walkthrough for installing ABS-GF wheel adapters on Peg Perego models. Covers tools needed, step-by-step process, and common tips.
+                </p>
+                <div className="flex items-center text-gray-500 text-sm">
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  ~8 minutes
+                </div>
+              </div>
+            </div>
+
+            {/* Video 2 - Battery Adapter Setup */}
+            <div className="bg-nerd-gray rounded-lg overflow-hidden group">
+              <div className="aspect-video bg-nerd-light-gray relative">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-nerd-red rounded-full flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                    <p className="text-gray-400 text-sm">Coming Soon</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-5">
+                <h3 className="text-xl font-bold text-white mb-2">DeWalt Battery Adapter Setup</h3>
+                <p className="text-gray-400 text-sm mb-3">
+                  Quick guide for installing the DeWalt battery adapter plate. Shows proper connection, safety checks, and voltage monitoring.
+                </p>
+                <div className="flex items-center text-gray-500 text-sm">
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  ~5 minutes
+                </div>
+              </div>
+            </div>
+
+            {/* Video 3 - Troubleshooting Common Issues */}
+            <div className="bg-nerd-gray rounded-lg overflow-hidden group">
+              <div className="aspect-video bg-nerd-light-gray relative">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-nerd-red rounded-full flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                    <p className="text-gray-400 text-sm">Coming Soon</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-5">
+                <h3 className="text-xl font-bold text-white mb-2">Troubleshooting Common Issues</h3>
+                <p className="text-gray-400 text-sm mb-3">
+                  Solutions for common problems: wobbly wheels, adapter fitment, and making adjustments for optimal performance.
+                </p>
+                <div className="flex items-center text-gray-500 text-sm">
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  ~6 minutes
+                </div>
+              </div>
+            </div>
+
+            {/* Video 4 - Product Comparison */}
+            <div className="bg-nerd-gray rounded-lg overflow-hidden group">
+              <div className="aspect-video bg-nerd-light-gray relative">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-nerd-red rounded-full flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                    <p className="text-gray-400 text-sm">Coming Soon</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-5">
+                <h3 className="text-xl font-bold text-white mb-2">Stock vs Upgraded Wheels Demo</h3>
+                <p className="text-gray-400 text-sm mb-3">
+                  Side-by-side comparison showing performance difference between stock plastic wheels and upgraded steel wheels with pneumatic tires.
+                </p>
+                <div className="flex items-center text-gray-500 text-sm">
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  ~4 minutes
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 bg-nerd-gray rounded-lg p-6">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="w-6 h-6 text-nerd-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-white font-semibold mb-2">Video Tutorial Requests</h3>
+                <p className="text-gray-400 text-sm">
+                  Have a specific installation question or want a video on a particular topic? <a href="/about#contact" className="text-nerd-red hover:text-red-400">Let us know</a> and we'll add it to our production schedule.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
