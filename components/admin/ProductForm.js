@@ -24,6 +24,8 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
     requiresDisclaimer: initialData.requiresDisclaimer || false,
     disclaimerText: initialData.disclaimerText || '',
     images: initialData.images || [],
+    // Payment
+    stripePaymentLink: initialData.stripePaymentLink || '',
     // Inventory & Shipping
     quantity: initialData.quantity !== undefined ? initialData.quantity : 10,
     lowStockThreshold: initialData.lowStockThreshold || 3,
@@ -293,6 +295,30 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
               placeholder="15"
             />
           </div>
+        </div>
+
+        {/* Stripe Payment Link */}
+        <div className="mt-4 bg-nerd-dark rounded p-4 border border-nerd-light-gray">
+          <label className="block text-white font-semibold mb-2">
+            <svg className="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            Stripe Payment Link
+          </label>
+          <input
+            type="url"
+            name="stripePaymentLink"
+            value={formData.stripePaymentLink}
+            onChange={handleChange}
+            className="w-full px-4 py-2 bg-nerd-gray text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red"
+            placeholder="https://buy.stripe.com/test_xxxxx or https://buy.stripe.com/xxxxx"
+          />
+          <p className="text-gray-400 text-xs mt-2">
+            📋 Create a payment link in Stripe Dashboard → Products → Create payment link. Then paste the URL here.
+          </p>
+          <p className="text-blue-400 text-xs mt-1">
+            ℹ️ See STRIPE_PAYMENT_SETUP.md for step-by-step instructions
+          </p>
         </div>
 
         {/* Profit Margin Calculation */}

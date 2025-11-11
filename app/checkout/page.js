@@ -40,6 +40,10 @@ export default function CheckoutPage() {
     setLoading(true)
 
     try {
+      // Check if products have Stripe payment links
+      const firstProductWithLink = cart.find(item => item.stripePaymentLink)
+      const allHaveLinks = cart.every(item => item.stripePaymentLink)
+
       // Get or create customer
       const customer = await getOrCreateCustomer({
         email: formData.email,
@@ -66,6 +70,7 @@ export default function CheckoutPage() {
         quantity: item.quantity,
         total: item.price * item.quantity,
         image: item.images?.[0] || null,
+        stripePaymentLink: item.stripePaymentLink || null,
       }))
 
       // Calculate totals
@@ -73,7 +78,7 @@ export default function CheckoutPage() {
       const discountAmount = getDiscount()
       const total = getTotal()
 
-      // Create order
+      // Create pending order
       const order = await createOrder({
         customerId: customer.id,
         customer: {
@@ -95,21 +100,53 @@ export default function CheckoutPage() {
         couponCode: couponCode || null,
         shippingCost: 0, // Free shipping
         total,
-        paymentStatus: 'pending', // Will be 'paid' when Stripe is connected
-        paymentMethod: 'pending', // Will be 'stripe' when connected
-        notes: 'Order created without payment - Stripe integration pending',
+        paymentStatus: firstProductWithLink ? 'pending_payment' : 'pending',
+        paymentMethod: firstProductWithLink ? 'stripe' : 'pending',
+        notes: firstProductWithLink ? 'Awaiting Stripe payment' : 'Order created without payment - Stripe integration pending',
       })
 
-      // Decrement inventory for each product
-      for (const item of cart) {
-        await decrementInventory(item.slug, item.quantity)
+      // Store order ID for payment success page
+      if (firstProductWithLink) {
+        sessionStorage.setItem('pendingOrderId', order.id)
+        sessionStorage.setItem('pendingOrderData', JSON.stringify({
+          orderId: order.id,
+          cartItems: cart.map(item => ({ slug: item.slug, quantity: item.quantity }))
+        }))
       }
 
-      // Clear cart
-      clearCart()
+      // If product has Stripe payment link, redirect to Stripe
+      if (cart.length === 1 && firstProductWithLink) {
+        // Single product with payment link - redirect to Stripe
+        const successUrl = `${window.location.origin}/payment-success?orderId=${order.id}`
+        const cancelUrl = `${window.location.origin}/checkout`
 
-      // Redirect to success page
-      router.push(`/order-confirmation?orderId=${order.id}`)
+        // Add success/cancel URLs to payment link if not already there
+        const paymentUrl = new URL(firstProductWithLink.stripePaymentLink)
+        if (!paymentUrl.searchParams.has('success_url')) {
+          paymentUrl.searchParams.set('prefilled_email', formData.email)
+        }
+
+        // Redirect to Stripe
+        window.location.href = firstProductWithLink.stripePaymentLink
+        return
+      } else if (cart.length > 1 && allHaveLinks) {
+        // Multiple products - for now, show limitation message
+        alert('Multiple product checkout with Stripe Payment Links: Please contact us to complete your order, or check out items individually. We\'re working on full cart support!')
+        router.push(`/order-confirmation?orderId=${order.id}`)
+        return
+      } else {
+        // No payment links or mixed - complete order without payment
+        // Decrement inventory
+        for (const item of cart) {
+          await decrementInventory(item.slug, item.quantity)
+        }
+
+        // Clear cart
+        clearCart()
+
+        // Redirect to success page
+        router.push(`/order-confirmation?orderId=${order.id}`)
+      }
 
     } catch (error) {
       console.error('Checkout error:', error)
