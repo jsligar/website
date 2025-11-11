@@ -1,26 +1,25 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import ProtectedRoute from '../../../../../components/ProtectedRoute'
-import ProductForm from '../../../../../components/admin/ProductForm'
-import { db } from '../../../../../lib/firebase'
+import ProtectedRoute from '../../../../components/ProtectedRoute'
+import ProductForm from '../../../../components/admin/ProductForm'
+import { db } from '../../../../lib/firebase'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
 
-function EditProductContent() {
+function EditProductContent({ productId }) {
   const router = useRouter()
-  const params = useParams()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     loadProduct()
-  }, [params.id])
+  }, [productId])
 
   const loadProduct = async () => {
     try {
-      const productRef = doc(db, 'products', params.id)
+      const productRef = doc(db, 'products', productId)
       const productSnap = await getDoc(productRef)
 
       if (productSnap.exists()) {
@@ -39,7 +38,7 @@ function EditProductContent() {
 
   const handleSubmit = async (productData) => {
     try {
-      const productRef = doc(db, 'products', params.id)
+      const productRef = doc(db, 'products', productId)
       await updateDoc(productRef, {
         ...productData,
         updatedAt: new Date().toISOString(),
@@ -92,10 +91,10 @@ function EditProductContent() {
   )
 }
 
-export default function EditProductPage() {
+export default function EditProductClient({ productId }) {
   return (
     <ProtectedRoute>
-      <EditProductContent />
+      <EditProductContent productId={productId} />
     </ProtectedRoute>
   )
 }

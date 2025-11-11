@@ -235,7 +235,7 @@ function ProductsContent() {
                     </td>
                     <td className="px-6 py-4 text-right text-sm font-medium">
                       <Link
-                        href={`/admin/products/${product.id}/edit`}
+                        href={`/admin/products/edit-${product.id}`}
                         className="text-nerd-red hover:text-red-400 mr-4"
                       >
                         Edit
