@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useCart } from '../../context/CartContext'
 import { createOrder, decrementInventory, getOrCreateCustomer } from '../../lib/orders'
+import TrustBadges from '../../components/TrustBadges'
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -336,7 +337,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* Order Summary */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
             <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6 sticky top-4">
               <h2 className="text-2xl font-bold text-white mb-4">Order Summary</h2>
 
@@ -387,6 +388,8 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
+
+            <TrustBadges />
           </div>
         </div>
       </div>

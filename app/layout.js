@@ -1,6 +1,7 @@
 import './globals.css'
 import Navigation from '../components/Navigation'
 import Footer from '../components/Footer'
+import GoogleAnalytics from '../components/GoogleAnalytics'
 import { CartProvider } from '../context/CartContext'
 import { AuthProvider } from '../context/AuthContext'
 
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
       </head>
       <body>
+        <GoogleAnalytics />
         <AuthProvider>
           <CartProvider>
             <Navigation />

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import NewsletterSignup from './NewsletterSignup'
 
 export default function Footer() {
   return (
@@ -89,31 +90,31 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/about#contact" className="text-gray-400 hover:text-white text-sm transition">
-                  Contact
+                <Link href="/faq" className="text-gray-400 hover:text-white text-sm transition">
+                  FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/policies#shipping" className="text-gray-400 hover:text-white text-sm transition">
-                  Shipping Policy
+                <Link href="/policies" className="text-gray-400 hover:text-white text-sm transition">
+                  Shipping & Returns
                 </Link>
               </li>
               <li>
-                <Link href="/policies#returns" className="text-gray-400 hover:text-white text-sm transition">
-                  Returns
-                </Link>
-              </li>
-              <li>
-                <Link href="/policies#privacy" className="text-gray-400 hover:text-white text-sm transition">
+                <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/admin/login" className="text-gray-500 hover:text-nerd-red text-sm transition">
-                  Admin
+                <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition">
+                  Terms of Service
                 </Link>
               </li>
             </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <NewsletterSignup />
           </div>
         </div>
 

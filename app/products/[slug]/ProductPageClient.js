@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCart } from '../../../context/CartContext'
+import ProductReviews from '../../../components/ProductReviews'
 
 export default function ProductPageClient({ product }) {
   const { addToCart } = useCart()
@@ -315,6 +316,9 @@ export default function ProductPageClient({ product }) {
             )}
           </div>
         </div>
+
+        {/* Reviews Section */}
+        <ProductReviews productId={product.id} />
       </div>
     </div>
   )
