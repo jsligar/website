@@ -113,8 +113,8 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h3 className="text-white font-semibold mb-3">Email</h3>
-                <a href="mailto:hello@nerdbillyfab.com" className="text-nerd-red hover:text-red-400 text-lg">
-                  hello@nerdbillyfab.com
+                <a href="mailto:thefortfoundry@gmail.com" className="text-nerd-red hover:text-red-400 text-lg">
+                  thefortfoundry@gmail.com
                 </a>
               </div>
 

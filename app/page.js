@@ -27,7 +27,7 @@ export default function Home() {
               <Link href="/shop" className="btn-primary text-center">
                 Shop Upgrades
               </Link>
-              <Link href="/products/razors-edge" className="btn-secondary text-center">
+              <Link href="/products/razors-edge-complete" className="btn-secondary text-center">
                 Discover Razors-Edge
               </Link>
             </div>
@@ -136,7 +136,7 @@ export default function Home() {
                   <div className="text-white text-xs">Remote Telemetry</div>
                 </div>
               </div>
-              <Link href="/products/razors-edge" className="btn-primary inline-block">
+              <Link href="/products/razors-edge-complete" className="btn-primary inline-block">
                 Learn More
               </Link>
             </div>
@@ -170,7 +170,7 @@ export default function Home() {
               <p className="text-gray-400 mb-4">
                 IoT sensor gateway with mesh networking capabilities. Monitor and visualize environmental data across multiple nodes with custom ESP32-based displays.
               </p>
-              <a href="#" className="text-nerd-red hover:text-red-400 font-semibold transition">
+              <a href="/projects" className="text-nerd-red hover:text-red-400 font-semibold transition">
                 Learn More →
               </a>
             </div>
@@ -183,7 +183,7 @@ export default function Home() {
               <p className="text-gray-400 mb-4">
                 Agricultural automation and monitoring platform. ESP32-powered sensor systems for precision farming and environmental control.
               </p>
-              <a href="#" className="text-nerd-red hover:text-red-400 font-semibold transition">
+              <a href="/projects" className="text-nerd-red hover:text-red-400 font-semibold transition">
                 Learn More →
               </a>
             </div>

@@ -8,11 +8,20 @@
     ],
     "rewrites": [
       {
-        "source": "**",
+        "source": "**!(/.well-known/**)",
         "destination": "/index.html"
       }
     ],
     "headers": [
+      {
+        "source": ".well-known/acme-challenge/**",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "text/plain"
+          }
+        ]
+      },
       {
         "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|ico)",
         "headers": [

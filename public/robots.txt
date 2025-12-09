@@ -1,0 +1,12 @@
+# Allow all robots
+User-agent: *
+Allow: /
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /checkout/
+Disallow: /cart/
+Disallow: /order-confirmation/
+
+# Sitemap
+Sitemap: https://nerdbillyfab.com/sitemap.xml

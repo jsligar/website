@@ -72,7 +72,7 @@ export default function PoliciesPage() {
 
             <div className="bg-nerd-light-gray p-4 rounded mt-6">
               <p className="text-sm">
-                <strong className="text-white">Questions about returns?</strong> Email us at hello@nerdbillyfab.com before sending anything back. We're here to help.
+                <strong className="text-white">Questions about returns?</strong> Email us at thefortfoundry@gmail.com before sending anything back. We're here to help.
               </p>
             </div>
           </div>
@@ -126,12 +126,12 @@ export default function PoliciesPage() {
                 <li>Request correction or deletion of your data</li>
                 <li>Opt out of marketing emails</li>
               </ul>
-              <p className="mt-2">Contact us at hello@nerdbillyfab.com to exercise these rights.</p>
+              <p className="mt-2">Contact us at thefortfoundry@gmail.com to exercise these rights.</p>
             </div>
 
             <div className="bg-nerd-light-gray p-4 rounded mt-6">
               <p className="text-sm">
-                <strong className="text-white">Questions about privacy?</strong> We're a small operation and take your privacy seriously. Email us anytime at hello@nerdbillyfab.com.
+                <strong className="text-white">Questions about privacy?</strong> We're a small operation and take your privacy seriously. Email us anytime at thefortfoundry@gmail.com.
               </p>
             </div>
           </div>

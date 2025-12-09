@@ -71,7 +71,7 @@ export default function AdminLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red transition"
-                placeholder="admin@nerdbillyfab.com"
+                placeholder="justin.sligar@gmail.com"
               />
             </div>
 
