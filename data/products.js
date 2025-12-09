@@ -32,6 +32,7 @@ export const products = [
     inStock: true,
     images: [],
     model3D: '/models/front-axle-adapter.stl',
+    thumbnail: '/images/thumbnails/front-axle-adapter.jpg',
     freeShipping: true
   },
   {
