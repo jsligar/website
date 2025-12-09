@@ -1,0 +1,16 @@
+{
+  "name": "NerdbillyFab",
+  "short_name": "NerdbillyFab",
+  "description": "Performance upgrades for Peg Perego and Power Wheels ride-on toys",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#dc2626",
+  "icons": [
+    {
+      "src": "/images/coming-soon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
