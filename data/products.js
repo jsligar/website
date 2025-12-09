@@ -30,7 +30,7 @@ export const products = [
       'Processing Time': '1-2 weeks (made to order)'
     },
     inStock: true,
-    images: ['/images/products/front-rear-wheel-kit-1.jpg'],
+    images: [],
     freeShipping: true
   },
   {
@@ -62,7 +62,7 @@ export const products = [
       'Processing Time': '5-7 business days'
     },
     inStock: true,
-    images: ['/images/products/gator-xuv-heavy-duty-1.jpg'],
+    images: [],
     freeShipping: true
   },
   {
@@ -95,7 +95,7 @@ export const products = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/dewalt-adapter-1.jpg'],
+    images: [],
     freeShipping: true
   },
   {
@@ -130,7 +130,7 @@ export const products = [
       'Difficulty': 'Moderate'
     },
     inStock: true,
-    images: ['/images/products/7r-adapter-kit-1.jpg'],
+    images: [],
     freeShipping: true
   },
   {
@@ -165,7 +165,7 @@ export const products = [
       'Difficulty': 'Moderate'
     },
     inStock: true,
-    images: ['/images/products/7r-wheel-kit-1.jpg'],
+    images: [],
     freeShipping: true
   },
   {
@@ -199,7 +199,7 @@ export const products = [
       'Difficulty': 'Moderate'
     },
     inStock: true,
-    images: ['/images/products/gator-adapter-kit-1.jpg'],
+    images: [],
     freeShipping: true
   },
   {
@@ -234,7 +234,7 @@ export const products = [
       'Difficulty': 'Moderate'
     },
     inStock: true,
-    images: ['/images/products/4x13-wheel-kit-1.jpg'],
+    images: [],
     freeShipping: true
   },
   {
@@ -270,7 +270,7 @@ export const products = [
       'Processing Time': '1-2 weeks (built to order)'
     },
     inStock: true,
-    images: ['/images/products/13-steel-wheel-kit-1.jpg'],
+    images: [],
     freeShipping: true
   },
   // Note: Razors-Edge products moved to separate catalog (razors-edge-products.js)

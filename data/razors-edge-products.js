@@ -52,7 +52,7 @@ export const razorsEdgeProducts = [
     inStock: false,
     preOrder: true,
     availableDate: 'Early 2026',
-    images: ['/images/products/razors-edge-complete-1.jpg'],
+    images: [],
     freeShipping: true,
     requiresDisclaimer: true,
     disclaimerText: 'WARNING: This system operates at 60V with Li-ion batteries. Installation and operation require electrical and mechanical expertise. Only qualified individuals should attempt this project. Improper installation or use can result in serious injury or death. By purchasing, you acknowledge all risks and assume full responsibility.'
@@ -98,7 +98,7 @@ export const razorsEdgeProducts = [
     inStock: false,
     preOrder: true,
     availableDate: 'Early 2026',
-    images: ['/images/products/razors-edge-diy-kit-1.jpg'],
+    images: [],
     freeShipping: true,
     requiresDisclaimer: true,
     disclaimerText: 'DIY Assembly Warning: This kit requires soldering, wiring, and electrical assembly skills. Improper assembly can result in component damage, fire hazard, or personal injury. 60V systems are dangerous. Only qualified individuals should attempt this build.'
@@ -145,7 +145,7 @@ export const razorsEdgeProducts = [
     inStock: false,
     preOrder: true,
     availableDate: 'Early 2026',
-    images: ['/images/products/razors-edge-bundle-1.jpg'],
+    images: [],
     freeShipping: true,
     requiresDisclaimer: true,
     disclaimerText: 'LITHIUM BATTERY WARNING: This bundle includes a high-capacity 60V Li-ion battery. Lithium batteries can cause fires or explosions if damaged, short-circuited, or improperly charged. Never puncture, crush, or expose to high temperatures. Use only the included charger. Keep away from children. By purchasing, you acknowledge understanding of lithium battery hazards and accept all risks.'
@@ -194,7 +194,7 @@ export const razorsEdgeProducts = [
     inStock: false,
     preOrder: true,
     availableDate: 'Early 2026',
-    images: ['/images/products/razors-edge-core-module-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -238,7 +238,7 @@ export const razorsEdgeProducts = [
     inStock: false,
     preOrder: true,
     availableDate: 'Early 2026',
-    images: ['/images/products/razors-edge-motor-module-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -283,7 +283,7 @@ export const razorsEdgeProducts = [
     inStock: false,
     preOrder: true,
     availableDate: 'Early 2026',
-    images: ['/images/products/razors-edge-power-module-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -328,7 +328,7 @@ export const razorsEdgeProducts = [
     inStock: false,
     preOrder: true,
     availableDate: 'Early 2026',
-    images: ['/images/products/razors-edge-display-module-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -374,7 +374,7 @@ export const razorsEdgeProducts = [
     inStock: false,
     preOrder: true,
     availableDate: 'Early 2026',
-    images: ['/images/products/razors-edge-gps-module-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -419,7 +419,7 @@ export const razorsEdgeProducts = [
     inStock: false,
     preOrder: true,
     availableDate: 'Early 2026',
-    images: ['/images/products/razors-edge-safety-module-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -465,7 +465,7 @@ export const razorsEdgeProducts = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/razors-edge-wiring-kit-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -508,7 +508,7 @@ export const razorsEdgeProducts = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/razors-edge-enclosure-kit-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -552,7 +552,7 @@ export const razorsEdgeProducts = [
     inStock: false,
     preOrder: true,
     availableDate: 'Early 2026',
-    images: ['/images/products/razors-edge-pcb-set-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -602,7 +602,7 @@ export const razorsEdgeProducts = [
     inStock: false,
     preOrder: true,
     availableDate: 'Early 2026',
-    images: ['/images/products/razors-edge-battery-60v-1.jpg'],
+    images: [],
     freeShipping: true,
     requiresDisclaimer: true,
     disclaimerText: 'LITHIUM BATTERY HAZARD: This high-capacity lithium battery can cause severe burns, fires, or explosions if mishandled. Never puncture, crush, short-circuit, or expose to temperatures above 60°C. Use only the provided charger. Store in cool, dry location away from flammable materials. Ships ground only (Class 9 Hazmat). Additional hazmat fees may apply.'
@@ -638,7 +638,7 @@ export const razorsEdgeProducts = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/razors-edge-esp32-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -667,7 +667,7 @@ export const razorsEdgeProducts = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/razors-edge-mdd20a-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -696,7 +696,7 @@ export const razorsEdgeProducts = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/razors-edge-ina228-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -724,7 +724,7 @@ export const razorsEdgeProducts = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/razors-edge-gps-replacement-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -754,7 +754,7 @@ export const razorsEdgeProducts = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/razors-edge-oled-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -782,7 +782,7 @@ export const razorsEdgeProducts = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/razors-edge-encoder-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -811,7 +811,7 @@ export const razorsEdgeProducts = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/razors-edge-remote-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -839,7 +839,7 @@ export const razorsEdgeProducts = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/razors-edge-estop-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -879,7 +879,7 @@ export const razorsEdgeProducts = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/razors-edge-manual-1.jpg'],
+    images: [],
     freeShipping: true
   },
 
@@ -914,7 +914,7 @@ export const razorsEdgeProducts = [
     },
     inStock: true,
     preOrder: false,
-    images: ['/images/products/razors-edge-support-1.jpg'],
+    images: [],
     freeShipping: false
   }
 ]
