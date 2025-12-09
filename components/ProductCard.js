@@ -60,18 +60,18 @@ export default function ProductCard({ product }) {
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <h3 className="text-white font-semibold mb-2 line-clamp-2 group-hover:text-nerd-red transition">
+      <div className="p-3 sm:p-4">
+        <h3 className="text-white font-semibold text-sm sm:text-base mb-2 line-clamp-2 group-hover:text-nerd-red transition">
           {product.name}
         </h3>
 
         {/* Price */}
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-nerd-red text-xl font-bold">
+        <div className="flex items-center gap-2 mb-2 sm:mb-3">
+          <span className="text-nerd-red text-lg sm:text-xl font-bold">
             ${product.price.toFixed(2)}
           </span>
           {product.originalPrice && (
-            <span className="text-gray-500 text-sm line-through">
+            <span className="text-gray-500 text-xs sm:text-sm line-through">
               ${product.originalPrice.toFixed(2)}
             </span>
           )}
@@ -79,7 +79,7 @@ export default function ProductCard({ product }) {
 
         {/* Description */}
         {product.description && (
-          <p className="text-gray-400 text-sm line-clamp-2 mb-3">
+          <p className="text-gray-400 text-xs sm:text-sm line-clamp-2 mb-2 sm:mb-3 hidden sm:block">
             {product.description}
           </p>
         )}
@@ -87,10 +87,10 @@ export default function ProductCard({ product }) {
         {/* Free Shipping Badge */}
         {product.freeShipping && (
           <div className="flex items-center text-green-400 text-xs">
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            Free Shipping
+            <span className="text-[10px] sm:text-xs">Free Shipping</span>
           </div>
         )}
       </div>
