@@ -99,9 +99,23 @@ function ProductsContent() {
               <h1 className="text-3xl font-bold text-white">Product Management</h1>
               <p className="text-gray-400 mt-1">{products.length} total products</p>
             </div>
-            <Link href="/admin/products/new" className="btn-primary">
-              + Add Product
-            </Link>
+            <div className="flex gap-3">
+              <button
+                onClick={handleMigrate}
+                disabled={migrating}
+                className={`px-4 py-2 rounded font-semibold transition ${
+                  migrating
+                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                    : 'bg-yellow-500 hover:bg-yellow-600 text-black'
+                }`}
+                title="Sync products from code to Firestore (updates thumbnails and 3D models)"
+              >
+                {migrating ? 'Syncing...' : '🔄 Sync Products'}
+              </button>
+              <Link href="/admin/products/new" className="btn-primary">
+                + Add Product
+              </Link>
+            </div>
           </div>
         </div>
       </div>
