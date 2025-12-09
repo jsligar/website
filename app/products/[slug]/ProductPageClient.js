@@ -4,6 +4,16 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCart } from '../../../context/CartContext'
+import dynamic from 'next/dynamic'
+
+const Model3DViewer = dynamic(() => import('../../../components/Model3DViewer'), { 
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-nerd-gray rounded-lg flex items-center justify-center">
+      <div className="text-white">Loading 3D viewer...</div>
+    </div>
+  )
+})
 
 export default function ProductPageClient({ product }) {
   const { addToCart } = useCart()
@@ -47,7 +57,12 @@ export default function ProductPageClient({ product }) {
           {/* Image Gallery */}
           <div>
             <div className="aspect-square bg-nerd-gray rounded-lg overflow-hidden mb-4">
-              {product.images && product.images[0] ? (
+              {product.model3D ? (
+                <Model3DViewer 
+                  modelUrl={product.model3D} 
+                  fallbackImage={product.images?.[0]}
+                />
+              ) : product.images && product.images[0] ? (
                 <Image
                   src={product.images[0]}
                   alt={product.name}
