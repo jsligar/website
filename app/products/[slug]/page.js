@@ -8,8 +8,9 @@ export function generateStaticParams() {
   }))
 }
 
-export default function ProductPage({ params }) {
-  const product = getProductBySlug(params.slug)
+export default async function ProductPage({ params }) {
+  const { slug } = await params
+  const product = getProductBySlug(slug)
 
   return <ProductPageClient product={product} />
 }
