@@ -6,7 +6,14 @@ export default function ProductCard({ product }) {
     <Link href={`/products/${product.slug}`} className="card group">
       {/* Image */}
       <div className="relative aspect-square bg-nerd-light-gray overflow-hidden">
-        {product.images && product.images[0] ? (
+        {product.thumbnail ? (
+          <Image
+            src={product.thumbnail}
+            alt={product.name}
+            fill
+            className="object-cover group-hover:scale-105 transition duration-300"
+          />
+        ) : product.images && product.images[0] ? (
           <Image
             src={product.images[0]}
             alt={product.name}
@@ -20,6 +27,16 @@ export default function ProductCard({ product }) {
             fill
             className="object-contain p-8"
           />
+        )}
+        
+        {/* 3D Model Badge */}
+        {product.model3D && (
+          <div className="absolute top-2 left-2 bg-nerd-red text-white text-xs font-bold px-2 py-1 rounded flex items-center gap-1">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2L2 6v8l8 4 8-4V6l-8-4zm0 2.5L15.5 7 10 9.5 4.5 7 10 4.5zM4 8.5l5.5 2.75v5.5L4 14v-5.5zm7.5 8.25v-5.5L17 8.5V14l-5.5 2.75z"/>
+            </svg>
+            3D
+          </div>
         )}
 
         {/* Badges */}
