@@ -272,6 +272,7 @@ export const products = [
       'Processing Time': '1-2 weeks (built to order)'
     },
     inStock: true,
+    cogs: 175,
     images: [],
     freeShipping: true
   },

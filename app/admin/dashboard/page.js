@@ -6,7 +6,7 @@ import { useAuth } from '../../../context/AuthContext'
 import { useRouter } from 'next/navigation'
 import ProtectedRoute from '../../../components/ProtectedRoute'
 import { db } from '../../../lib/firebase'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore'
 
 function DashboardContent() {
   const { user, signOut } = useAuth()
@@ -16,6 +16,14 @@ function DashboardContent() {
     inStockProducts: 0,
     preOrderProducts: 0,
   })
+  const [orderStats, setOrderStats] = useState({
+    totalOrders: 0,
+    pendingOrders: 0,
+    paidOrders: 0,
+    shippedOrders: 0,
+    totalRevenue: 0,
+  })
+  const [recentOrders, setRecentOrders] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -24,6 +32,7 @@ function DashboardContent() {
 
   const loadStats = async () => {
     try {
+      // Load product stats
       const productsRef = collection(db, 'products')
       const snapshot = await getDocs(productsRef)
 
@@ -40,6 +49,40 @@ function DashboardContent() {
         totalProducts: snapshot.size,
         inStockProducts: inStock,
         preOrderProducts: preOrder,
+      })
+
+      // Load order stats
+      const ordersRef = collection(db, 'orders')
+      const ordersSnapshot = await getDocs(ordersRef)
+
+      let pending = 0
+      let paid = 0
+      let shipped = 0
+      let revenue = 0
+
+      const ordersData = []
+      ordersSnapshot.forEach((doc) => {
+        const order = { id: doc.id, ...doc.data() }
+        ordersData.push(order)
+
+        if (order.status === 'pending') pending++
+        if (['paid', 'printing', 'printed', 'packing'].includes(order.status)) paid++
+        if (['shipped', 'delivered'].includes(order.status)) shipped++
+        if (['paid', 'printing', 'printed', 'packing', 'shipped', 'delivered'].includes(order.status)) {
+          revenue += order.total || 0
+        }
+      })
+
+      // Sort by date and get most recent
+      ordersData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      setRecentOrders(ordersData.slice(0, 5))
+
+      setOrderStats({
+        totalOrders: ordersSnapshot.size,
+        pendingOrders: pending,
+        paidOrders: paid,
+        shippedOrders: shipped,
+        totalRevenue: revenue,
       })
     } catch (error) {
       console.error('Error loading stats:', error)
@@ -81,7 +124,49 @@ function DashboardContent() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards */}
+        {/* Revenue & Order Stats */}
+        <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-white">💰 Sales Overview</h2>
+            <Link href="/admin/orders" className="text-nerd-red hover:text-white text-sm">
+              View all orders →
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4">
+              <p className="text-gray-400 text-xs uppercase">Revenue</p>
+              <p className="text-2xl font-bold text-green-400">
+                ${loading ? '...' : orderStats.totalRevenue.toFixed(2)}
+              </p>
+            </div>
+            <div className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4">
+              <p className="text-gray-400 text-xs uppercase">Orders</p>
+              <p className="text-2xl font-bold text-white">
+                {loading ? '...' : orderStats.totalOrders}
+              </p>
+            </div>
+            <div className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4">
+              <p className="text-gray-400 text-xs uppercase">Pending</p>
+              <p className="text-2xl font-bold text-yellow-400">
+                {loading ? '...' : orderStats.pendingOrders}
+              </p>
+            </div>
+            <div className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4">
+              <p className="text-gray-400 text-xs uppercase">Processing</p>
+              <p className="text-2xl font-bold text-blue-400">
+                {loading ? '...' : orderStats.paidOrders}
+              </p>
+            </div>
+            <div className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4">
+              <p className="text-gray-400 text-xs uppercase">Shipped</p>
+              <p className="text-2xl font-bold text-green-400">
+                {loading ? '...' : orderStats.shippedOrders}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Product Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6">
             <div className="flex items-center justify-between">
@@ -135,7 +220,24 @@ function DashboardContent() {
         {/* Quick Actions */}
         <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6 mb-8">
           <h2 className="text-xl font-bold text-white mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <Link
+              href="/admin/orders"
+              className="bg-nerd-dark hover:bg-nerd-light-gray border border-nerd-light-gray rounded-lg p-4 transition group"
+            >
+              <div className="flex items-center">
+                <div className="bg-green-500/20 p-2 rounded group-hover:bg-green-500/30 transition">
+                  <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-white font-semibold">Orders</p>
+                  <p className="text-gray-400 text-sm">Fulfillment workflow</p>
+                </div>
+              </div>
+            </Link>
+
             <Link
               href="/admin/products"
               className="bg-nerd-dark hover:bg-nerd-light-gray border border-nerd-light-gray rounded-lg p-4 transition group"
@@ -147,7 +249,7 @@ function DashboardContent() {
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <p className="text-white font-semibold">Manage Products</p>
+                  <p className="text-white font-semibold">Products</p>
                   <p className="text-gray-400 text-sm">Add, edit, or delete</p>
                 </div>
               </div>
@@ -158,8 +260,8 @@ function DashboardContent() {
               className="bg-nerd-dark hover:bg-nerd-light-gray border border-nerd-light-gray rounded-lg p-4 transition group"
             >
               <div className="flex items-center">
-                <div className="bg-green-500/20 p-2 rounded group-hover:bg-green-500/30 transition">
-                  <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="bg-blue-500/20 p-2 rounded group-hover:bg-blue-500/30 transition">
+                  <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
                 </div>
@@ -192,37 +294,54 @@ function DashboardContent() {
               className="bg-nerd-dark hover:bg-nerd-light-gray border border-nerd-light-gray rounded-lg p-4 transition group text-left"
             >
               <div className="flex items-center">
-                <div className="bg-blue-500/20 p-2 rounded group-hover:bg-blue-500/30 transition">
-                  <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="bg-yellow-500/20 p-2 rounded group-hover:bg-yellow-500/30 transition">
+                  <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <p className="text-white font-semibold">Refresh Stats</p>
-                  <p className="text-gray-400 text-sm">Update dashboard</p>
+                  <p className="text-white font-semibold">Refresh</p>
+                  <p className="text-gray-400 text-sm">Update stats</p>
                 </div>
               </div>
             </button>
-
-            <Link
-              href="/"
-              className="bg-nerd-dark hover:bg-nerd-light-gray border border-nerd-light-gray rounded-lg p-4 transition group"
-            >
-              <div className="flex items-center">
-                <div className="bg-purple-500/20 p-2 rounded group-hover:bg-purple-500/30 transition">
-                  <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-white font-semibold">View Store</p>
-                  <p className="text-gray-400 text-sm">See live site</p>
-                </div>
-              </div>
-            </Link>
           </div>
         </div>
+
+        {/* Recent Orders */}
+        {recentOrders.length > 0 && (
+          <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6 mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-white">📦 Recent Orders</h2>
+              <Link href="/admin/orders" className="text-nerd-red hover:text-white text-sm">
+                View all →
+              </Link>
+            </div>
+            <div className="space-y-3">
+              {recentOrders.map((order) => (
+                <div key={order.id} className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4 flex justify-between items-center">
+                  <div>
+                    <p className="text-white font-semibold">{order.orderNumber}</p>
+                    <p className="text-gray-400 text-sm">
+                      {order.customer?.firstName} {order.customer?.lastName} • {order.items?.length || 0} items
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-nerd-red font-bold">${order.total?.toFixed(2)}</p>
+                    <span className={`text-xs px-2 py-1 rounded ${
+                      order.status === 'pending' ? 'bg-yellow-500 text-black' :
+                      order.status === 'paid' ? 'bg-blue-500 text-white' :
+                      order.status === 'shipped' ? 'bg-green-500 text-white' :
+                      'bg-gray-500 text-white'
+                    }`}>
+                      {order.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Recent Activity / Instructions */}
         <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-6">

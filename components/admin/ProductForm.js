@@ -5,6 +5,13 @@ import { storage } from '../../lib/firebase'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 export default function ProductForm({ initialData = {}, onSubmit, submitText = 'Save Product' }) {
+  const normalizedBreakdown = Array.isArray(initialData.cogsBreakdown) && initialData.cogsBreakdown.length > 0
+    ? initialData.cogsBreakdown.map((entry) => ({
+        label: entry.label || '',
+        amount: entry.amount !== undefined && entry.amount !== null ? entry.amount.toString() : '',
+      }))
+    : [{ label: '', amount: '' }]
+
   const [formData, setFormData] = useState({
     name: initialData.name || '',
     slug: initialData.slug || '',
@@ -35,6 +42,7 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
     width: initialData.width || '',
     height: initialData.height || '',
     dimensionUnit: initialData.dimensionUnit || 'in',
+    cogsBreakdown: normalizedBreakdown,
   })
 
   const [uploading, setUploading] = useState(false)
@@ -104,6 +112,47 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
     }))
   }
 
+  const calculateBreakdownTotal = (entries = formData.cogsBreakdown) => {
+    return (entries || []).reduce((sum, entry) => {
+      const amountValue =
+        entry.amount !== '' && entry.amount !== null
+          ? parseFloat(entry.amount)
+          : null
+      return sum + (Number.isFinite(amountValue) ? amountValue : 0)
+    }, 0)
+  }
+
+  const handleBreakdownChange = (index, field, value) => {
+    setFormData(prev => {
+      const updated = [...prev.cogsBreakdown]
+      updated[index] = { ...updated[index], [field]: value }
+      return { ...prev, cogsBreakdown: updated }
+    })
+  }
+
+  const handleAddBreakdownRow = () => {
+    setFormData(prev => ({
+      ...prev,
+      cogsBreakdown: [...prev.cogsBreakdown, { label: '', amount: '' }],
+    }))
+  }
+
+  const handleRemoveBreakdownRow = (index) => {
+    setFormData(prev => {
+      const updated = prev.cogsBreakdown.filter((_, i) => i !== index)
+      return {
+        ...prev,
+        cogsBreakdown: updated.length > 0 ? updated : [{ label: '', amount: '' }],
+      }
+    })
+  }
+
+  const handleCopyBreakdownToCost = () => {
+    const total = calculateBreakdownTotal()
+    if (total === 0) return
+    setFormData(prev => ({ ...prev, cost: total.toFixed(2) }))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSubmitting(true)
@@ -129,14 +178,36 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
         return
       }
 
+      const sanitizedBreakdown = formData.cogsBreakdown
+        .map((entry) => {
+          const amountValue =
+            entry.amount !== '' && entry.amount !== null
+              ? parseFloat(entry.amount)
+              : null
+
+          return {
+            label: entry.label?.trim() || '',
+            amount: Number.isFinite(amountValue) ? amountValue : null,
+          }
+        })
+        .filter((entry) => entry.label || entry.amount !== null)
+      const sanitizedBreakdownTotal = sanitizedBreakdown.reduce(
+        (sum, entry) => sum + (entry.amount ?? 0),
+        0
+      )
+      const manualCost = formData.cost !== '' ? parseFloat(formData.cost) : null
+      const validManualCost = Number.isFinite(manualCost) ? manualCost : null
+      const finalCost = sanitizedBreakdown.length > 0 ? sanitizedBreakdownTotal : validManualCost
+
       const productData = {
         ...formData,
         price: parseFloat(formData.price),
-        cost: formData.cost ? parseFloat(formData.cost) : null,
+        cost: finalCost,
         originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
         discount: parseInt(formData.discount) || 0,
         features,
         specifications,
+        cogsBreakdown: sanitizedBreakdown,
         // Inventory
         quantity: parseInt(formData.quantity) || 0,
         lowStockThreshold: parseInt(formData.lowStockThreshold) || 0,
@@ -156,6 +227,8 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
       setSubmitting(false)
     }
   }
+
+  const breakdownTotal = calculateBreakdownTotal()
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -294,6 +367,67 @@ export default function ProductForm({ initialData = {}, onSubmit, submitText = '
               className="w-full px-4 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red"
               placeholder="15"
             />
+          </div>
+        </div>
+
+        <div className="md:col-span-2">
+          <div className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-white">COGS Breakdown</p>
+                <p className="text-xs text-gray-400">Itemize labor, materials, and tooling for more accurate costing or Grocy export.</p>
+              </div>
+              <button
+                type="button"
+                onClick={handleAddBreakdownRow}
+                className="text-xs font-semibold text-nerd-red hover:text-white"
+              >
+                + Add line
+              </button>
+            </div>
+            <div className="space-y-2">
+              {formData.cogsBreakdown.map((entry, index) => (
+                <div key={index} className="grid gap-2 md:grid-cols-[1fr_120px_auto] items-end">
+                  <input
+                    type="text"
+                    name={`cogsLabel-${index}`}
+                    value={entry.label}
+                    onChange={(event) => handleBreakdownChange(index, 'label', event.target.value)}
+                    className="w-full px-3 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red"
+                    placeholder="Label (e.g. Labor, Tires, Hardware)"
+                  />
+                  <input
+                    type="number"
+                    name={`cogsAmount-${index}`}
+                    value={entry.amount}
+                    onChange={(event) => handleBreakdownChange(index, 'amount', event.target.value)}
+                    step="0.01"
+                    className="w-full px-3 py-2 bg-nerd-dark text-white border border-nerd-light-gray rounded focus:outline-none focus:border-nerd-red"
+                    placeholder="0.00"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveBreakdownRow(index)}
+                    className="text-[11px] text-gray-400 hover:text-white"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-between text-xs text-gray-400">
+              <span>Breakdown total: ${breakdownTotal.toFixed(2)}</span>
+              <button
+                type="button"
+                onClick={handleCopyBreakdownToCost}
+                disabled={breakdownTotal === 0}
+                className={`text-xs font-semibold ${
+                  breakdownTotal === 0 ? 'text-gray-600 cursor-not-allowed' : 'text-nerd-red hover:text-white'
+                }`}
+              >
+                Use as COGS
+              </button>
+            </div>
           </div>
         </div>
 

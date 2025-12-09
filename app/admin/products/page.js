@@ -2,19 +2,25 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import ProtectedRoute from '../../../components/ProtectedRoute'
 import { db } from '../../../lib/firebase'
 import { collection, getDocs, deleteDoc, doc, setDoc } from 'firebase/firestore'
 import { products as staticProducts } from '../../../data/products'
 
 function ProductsContent() {
-  const router = useRouter()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [migrating, setMigrating] = useState(false)
   const [showMigration, setShowMigration] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+
+  const formatCurrency = (value) => {
+    return typeof value === 'number' ? `$${value.toFixed(2)}` : '—'
+  }
+
+  const formatPercentage = (value) => {
+    return typeof value === 'number' ? `${value.toFixed(1)}%` : '—'
+  }
 
   useEffect(() => {
     loadProducts()
@@ -36,6 +42,32 @@ function ProductsContent() {
       console.error('Error loading products:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleCostUpdate = async (product) => {
+    const current = typeof product.cogs === 'number' ? product.cogs.toString() : ''
+    const input = prompt(`Enter COGS (cost of goods sold) for ${product.name}`, current)
+
+    if (input === null) return
+
+    const parsed = Number(input)
+    if (Number.isNaN(parsed)) {
+      alert('Please enter a valid number for COGS.')
+      return
+    }
+
+    try {
+      await setDoc(doc(db, 'products', product.id), {
+        cogs: parsed,
+        updatedAt: new Date().toISOString(),
+      }, { merge: true })
+
+      alert(`${product.name} COGS updated to ${formatCurrency(parsed)}.`)
+      await loadProducts()
+    } catch (error) {
+      console.error('Error updating COGS:', error)
+      alert('Failed to update COGS: ' + error.message)
     }
   }
 
@@ -85,6 +117,43 @@ function ProductsContent() {
     p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.category?.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  // Product catalog summary (potential revenue if all sold)
+  const catalogSummary = products.reduce((acc, product) => {
+    const price = typeof product.price === 'number' ? product.price : 0
+    acc.catalogValue += price
+
+    if (typeof product.cogs === 'number') {
+      acc.totalCOGS += product.cogs
+      acc.productsWithCOGS += 1
+      const profit = price - product.cogs
+      const margin = price ? (profit / price) * 100 : 0
+
+      if (!acc.bestMargin || margin > acc.bestMargin.margin) {
+        acc.bestMargin = { name: product.name, margin }
+      }
+
+      if (!acc.worstMargin || margin < acc.worstMargin.margin) {
+        acc.worstMargin = { name: product.name, margin }
+      }
+    } else {
+      acc.missingCOGS += 1
+    }
+
+    return acc
+  }, {
+    catalogValue: 0,
+    totalCOGS: 0,
+    missingCOGS: 0,
+    productsWithCOGS: 0,
+    bestMargin: null,
+    worstMargin: null,
+  })
+
+  const potentialProfit = catalogSummary.catalogValue - catalogSummary.totalCOGS
+  const averageMargin = catalogSummary.catalogValue
+    ? (potentialProfit / catalogSummary.catalogValue) * 100
+    : null
 
   return (
     <div className="min-h-screen bg-nerd-dark">
@@ -160,6 +229,56 @@ function ProductsContent() {
           />
         </div>
 
+        {!loading && products.length > 0 && (
+          <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-5 mb-6 space-y-4">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-bold text-white">📊 Catalog Analysis</h2>
+              <Link href="/admin/orders" className="text-nerd-red hover:text-white text-sm">
+                View real sales data →
+              </Link>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4">
+                <p className="text-xs text-gray-400 uppercase tracking-wider">Catalog Value</p>
+                <p className="text-2xl font-bold text-white">{formatCurrency(catalogSummary.catalogValue)}</p>
+                <p className="text-xs text-gray-500 mt-1">Sum of all product prices</p>
+              </div>
+              <div className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4">
+                <p className="text-xs text-gray-400 uppercase tracking-wider">Total COGS</p>
+                <p className="text-2xl font-bold text-white">{formatCurrency(catalogSummary.totalCOGS)}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {catalogSummary.productsWithCOGS}/{products.length} with cost data
+                </p>
+              </div>
+              <div className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4">
+                <p className="text-xs text-gray-400 uppercase tracking-wider">Potential Profit</p>
+                <p className="text-2xl font-bold text-green-400">{formatCurrency(potentialProfit)}</p>
+                <p className="text-xs text-gray-500 mt-1">If all items sold once</p>
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4">
+                <p className="text-xs text-gray-400 uppercase tracking-wider">Average Margin</p>
+                <p className="text-xl font-semibold text-white">{formatPercentage(averageMargin)}</p>
+                <p className="text-xs text-gray-500 mt-1">Only includes products with COGS</p>
+              </div>
+              <div className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4">
+                <p className="text-xs text-gray-400 uppercase tracking-wider">Missing COGS</p>
+                <p className="text-2xl font-bold text-yellow-400">{catalogSummary.missingCOGS}</p>
+              </div>
+              <div className="bg-nerd-dark border border-nerd-light-gray rounded-lg p-4">
+                <p className="text-xs text-gray-400 uppercase tracking-wider">Margins</p>
+                <p className="text-sm text-green-400">
+                  {catalogSummary.bestMargin ? `Best: ${catalogSummary.bestMargin.name} (${formatPercentage(catalogSummary.bestMargin.margin)})` : 'Best: —'}
+                </p>
+                <p className="text-sm text-red-400 mt-1">
+                  {catalogSummary.worstMargin ? `Worst: ${catalogSummary.worstMargin.name} (${formatPercentage(catalogSummary.worstMargin.margin)})` : 'Worst: —'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Products List */}
         {loading ? (
           <div className="text-center py-12">
@@ -196,6 +315,12 @@ function ProductsContent() {
                     Price
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    COGS
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Profit
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     Status
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -204,9 +329,20 @@ function ProductsContent() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-nerd-light-gray">
-                {filteredProducts.map((product) => (
-                  <tr key={product.id} className="hover:bg-nerd-dark transition">
-                    <td className="px-6 py-4">
+                {filteredProducts.map((product) => {
+                  const cogsValue = typeof product.cogs === 'number' ? product.cogs : null
+                  const profitValue =
+                    cogsValue !== null && typeof product.price === 'number'
+                      ? product.price - cogsValue
+                      : null
+                  const marginPercent =
+                    profitValue !== null && typeof product.price === 'number' && product.price > 0
+                      ? (profitValue / product.price) * 100
+                      : null
+
+                  return (
+                    <tr key={product.id} className="hover:bg-nerd-dark transition">
+                      <td className="px-6 py-4">
                       <div className="flex items-center">
                         <div className="w-12 h-12 bg-nerd-dark rounded flex items-center justify-center flex-shrink-0 relative">
                           {product.thumbnail ? (
@@ -240,6 +376,39 @@ function ProductsContent() {
                       )}
                     </td>
                     <td className="px-6 py-4">
+                      <div className="flex flex-col gap-1">
+                        {cogsValue !== null ? (
+                          <>
+                            <span className="text-sm font-semibold text-white">{formatCurrency(cogsValue)}</span>
+                            <span className="text-xs text-gray-500">cost of goods</span>
+                          </>
+                        ) : (
+                          <span className="text-xs text-yellow-300 font-semibold">Missing</span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleCostUpdate(product)}
+                          className="text-xs text-nerd-red hover:underline text-left"
+                        >
+                          {cogsValue !== null ? 'Adjust COGS' : 'Set COGS'}
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {profitValue !== null ? (
+                        <div className="flex flex-col items-end gap-1">
+                          <span className={`text-sm font-semibold ${profitValue >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {formatCurrency(profitValue)}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {marginPercent !== null ? `${formatPercentage(marginPercent)} margin` : '—'}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-500">COGS needed</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
                       {product.inStock ? (
                         <span className="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-green-900/30 text-green-400 border border-green-500">
                           In Stock
@@ -268,8 +437,9 @@ function ProductsContent() {
                         Delete
                       </button>
                     </td>
-                  </tr>
-                ))}
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
