@@ -13,13 +13,13 @@ export const components = [
   { id: 'pla-black-100g', name: 'PLA Black (100g)', type: 'PLA', color: 'Black', category: 'Filament', cost: 1.40, unit: 'per 100g', onHand: 0 },
   { id: 'pla-red-100g', name: 'PLA Red (100g)', type: 'PLA', color: 'Red', category: 'Filament', cost: 1.50, unit: 'per 100g', onHand: 0 },
 
-  // Bambu Lab PLA (actual purchase prices)
-  { id: 'pla-bambu-blue-100g', name: 'PLA Bambu Blue (100g)', type: 'PLA', color: 'Blue', category: 'Filament', cost: 1.60, unit: 'per 100g', onHand: 1000, notes: '1000g spool @ $15.99' },
-  { id: 'pla-bambu-purple-100g', name: 'PLA Bambu Purple (100g)', type: 'PLA', color: 'Purple', category: 'Filament', cost: 2.00, unit: 'per 100g', onHand: 800, notes: '800g spool @ $15.99' },
-  { id: 'pla-bambu-orange-100g', name: 'PLA Bambu Orange (100g)', type: 'PLA', color: 'Orange', category: 'Filament', cost: 8.00, unit: 'per 100g', onHand: 200, notes: '200g spool @ $15.99 (small spool premium)' },
-  { id: 'pla-bambu-red-100g', name: 'PLA Bambu Red (100g)', type: 'PLA', color: 'Red', category: 'Filament', cost: 2.00, unit: 'per 100g', onHand: 800, notes: '800g spool @ $15.99' },
-  { id: 'pla-bambu-green-100g', name: 'PLA Bambu Green (100g)', type: 'PLA', color: 'Green', category: 'Filament', cost: 2.00, unit: 'per 100g', onHand: 800, notes: '800g spool @ $15.99' },
-  { id: 'pla-bambu-white-100g', name: 'PLA Bambu White (100g)', type: 'PLA', color: 'White', category: 'Filament', cost: 2.00, unit: 'per 100g', onHand: 800, notes: '800g spool @ $15.99' },
+  // Bambu Lab PLA (actual purchase prices - all 1kg spools @ $15.99)
+  { id: 'pla-bambu-blue-100g', name: 'PLA Bambu Blue (100g)', type: 'PLA', color: 'Blue', category: 'Filament', cost: 1.60, unit: 'per 100g', onHand: 1000, notes: '1000g spool @ $15.99 (full spool)' },
+  { id: 'pla-bambu-purple-100g', name: 'PLA Bambu Purple (100g)', type: 'PLA', color: 'Purple', category: 'Filament', cost: 1.60, unit: 'per 100g', onHand: 800, notes: '1000g spool @ $15.99 (800g remaining)' },
+  { id: 'pla-bambu-orange-100g', name: 'PLA Bambu Orange (100g)', type: 'PLA', color: 'Orange', category: 'Filament', cost: 1.60, unit: 'per 100g', onHand: 200, notes: '1000g spool @ $15.99 (200g remaining)' },
+  { id: 'pla-bambu-red-100g', name: 'PLA Bambu Red (100g)', type: 'PLA', color: 'Red', category: 'Filament', cost: 1.60, unit: 'per 100g', onHand: 800, notes: '1000g spool @ $15.99 (800g remaining)' },
+  { id: 'pla-bambu-green-100g', name: 'PLA Bambu Green (100g)', type: 'PLA', color: 'Green', category: 'Filament', cost: 1.60, unit: 'per 100g', onHand: 800, notes: '1000g spool @ $15.99 (800g remaining)' },
+  { id: 'pla-bambu-white-100g', name: 'PLA Bambu White (100g)', type: 'PLA', color: 'White', category: 'Filament', cost: 1.60, unit: 'per 100g', onHand: 800, notes: '1000g spool @ $15.99 (800g remaining)' },
 
   // Support Material
   { id: 'support-bambu-100g', name: 'Support Material Bambu (100g)', type: 'Support', color: 'Natural', category: 'Filament', cost: 5.20, unit: 'per 100g', onHand: 500, notes: '500g spool @ $25.99' },
