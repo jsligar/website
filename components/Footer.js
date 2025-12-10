@@ -94,6 +94,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/track-order" className="text-gray-400 hover:text-nerd-red text-sm transition font-semibold">
+                  Track Order
+                </Link>
+              </li>
+              <li>
                 <Link href="/policies#shipping" className="text-gray-400 hover:text-white text-sm transition">
                   Shipping Policy
                 </Link>

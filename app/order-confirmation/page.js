@@ -66,6 +66,26 @@ function OrderConfirmationContent() {
           <p className="text-gray-400 text-lg">Thank you for your order.</p>
         </div>
 
+        {/* IMPORTANT: Save Your Order Number */}
+        <div className="bg-nerd-red/10 border-2 border-nerd-red rounded-lg p-6 mb-6">
+          <div className="text-center">
+            <p className="text-nerd-red font-bold text-sm uppercase mb-2">📌 Important - Save This Information</p>
+            <p className="text-white text-lg mb-3">Your Order Number</p>
+            <div className="bg-nerd-dark border border-nerd-red rounded-lg p-4 mb-3">
+              <p className="text-white font-mono font-bold text-2xl tracking-wider">{order.orderNumber}</p>
+            </div>
+            <p className="text-gray-300 text-sm mb-4">
+              Save this order number to track your order status. You'll need it along with your email address.
+            </p>
+            <Link
+              href={`/track-order`}
+              className="inline-block bg-nerd-red hover:bg-red-600 text-white font-bold py-2 px-6 rounded transition"
+            >
+              Track Your Order →
+            </Link>
+          </div>
+        </div>
+
         {/* Order Details Card */}
         <div className="bg-nerd-gray border border-nerd-light-gray rounded-lg p-8 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">

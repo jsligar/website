@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { updateDoc, doc } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
-import { decrementInventory } from '../../lib/orders'
+import { decrementInventory, getOrder } from '../../lib/orders'
 import { useCart } from '../../context/CartContext'
 
 function PaymentSuccessContent() {
@@ -15,6 +15,7 @@ function PaymentSuccessContent() {
   const [processing, setProcessing] = useState(true)
   const [success, setSuccess] = useState(false)
   const [orderId, setOrderId] = useState(null)
+  const [orderNumber, setOrderNumber] = useState(null)
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -55,6 +56,12 @@ function PaymentSuccessContent() {
         for (const item of orderData.cartItems) {
           await decrementInventory(item.slug, item.quantity)
         }
+      }
+
+      // Get the order to retrieve the order number
+      const orderDetails = await getOrder(finalOrderId)
+      if (orderDetails && orderDetails.orderNumber) {
+        setOrderNumber(orderDetails.orderNumber)
       }
 
       // Clear cart and sessionStorage
@@ -130,10 +137,23 @@ function PaymentSuccessContent() {
               Thank you for your purchase. Your order has been confirmed.
             </p>
 
-            {orderId && (
-              <div className="bg-nerd-dark rounded p-4 mb-6">
-                <p className="text-gray-400 text-sm mb-1">Your order number:</p>
-                <p className="text-white text-2xl font-bold font-mono">{orderId}</p>
+            {/* IMPORTANT: Save Your Order Number */}
+            {orderNumber && (
+              <div className="bg-nerd-red/10 border-2 border-nerd-red rounded-lg p-6 mb-6">
+                <p className="text-nerd-red font-bold text-sm uppercase mb-2">📌 Important - Save This Information</p>
+                <p className="text-white text-lg mb-3">Your Order Number</p>
+                <div className="bg-nerd-dark border border-nerd-red rounded-lg p-4 mb-3">
+                  <p className="text-white font-mono font-bold text-2xl tracking-wider">{orderNumber}</p>
+                </div>
+                <p className="text-gray-300 text-sm mb-4">
+                  Save this order number to track your order status. You'll need it along with your email address.
+                </p>
+                <Link
+                  href="/track-order"
+                  className="inline-block bg-nerd-red hover:bg-red-600 text-white font-bold py-2 px-6 rounded transition"
+                >
+                  Track Your Order →
+                </Link>
               </div>
             )}
 
@@ -167,13 +187,18 @@ function PaymentSuccessContent() {
               </ul>
             </div>
 
-            <div className="space-x-4">
-              <Link href="/" className="btn-primary inline-block">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/shop" className="btn-primary inline-block">
                 Continue Shopping
               </Link>
-              <Link href="/about#contact" className="btn-secondary inline-block">
-                Contact Us
-              </Link>
+              {orderNumber && (
+                <Link
+                  href="/track-order"
+                  className="bg-nerd-light-gray hover:bg-gray-600 text-white font-bold py-3 px-6 rounded transition inline-block"
+                >
+                  Track Order
+                </Link>
+              )}
             </div>
           </div>
         </div>
