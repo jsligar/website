@@ -8,11 +8,29 @@ export const components = [
   // ============================================================================
   // Stored with type and color metadata for BOM calculations
 
+  // Basic PLA
   { id: 'pla-white-100g', name: 'PLA White (100g)', type: 'PLA', color: 'White', category: 'Filament', cost: 1.40, unit: 'per 100g', onHand: 0 },
   { id: 'pla-black-100g', name: 'PLA Black (100g)', type: 'PLA', color: 'Black', category: 'Filament', cost: 1.40, unit: 'per 100g', onHand: 0 },
   { id: 'pla-red-100g', name: 'PLA Red (100g)', type: 'PLA', color: 'Red', category: 'Filament', cost: 1.50, unit: 'per 100g', onHand: 0 },
+
+  // Bambu Lab PLA (actual purchase prices)
+  { id: 'pla-bambu-blue-100g', name: 'PLA Bambu Blue (100g)', type: 'PLA', color: 'Blue', category: 'Filament', cost: 1.60, unit: 'per 100g', onHand: 1000, notes: '1000g spool @ $15.99' },
+  { id: 'pla-bambu-purple-100g', name: 'PLA Bambu Purple (100g)', type: 'PLA', color: 'Purple', category: 'Filament', cost: 2.00, unit: 'per 100g', onHand: 800, notes: '800g spool @ $15.99' },
+  { id: 'pla-bambu-orange-100g', name: 'PLA Bambu Orange (100g)', type: 'PLA', color: 'Orange', category: 'Filament', cost: 8.00, unit: 'per 100g', onHand: 200, notes: '200g spool @ $15.99 (small spool premium)' },
+  { id: 'pla-bambu-red-100g', name: 'PLA Bambu Red (100g)', type: 'PLA', color: 'Red', category: 'Filament', cost: 2.00, unit: 'per 100g', onHand: 800, notes: '800g spool @ $15.99' },
+  { id: 'pla-bambu-green-100g', name: 'PLA Bambu Green (100g)', type: 'PLA', color: 'Green', category: 'Filament', cost: 2.00, unit: 'per 100g', onHand: 800, notes: '800g spool @ $15.99' },
+  { id: 'pla-bambu-white-100g', name: 'PLA Bambu White (100g)', type: 'PLA', color: 'White', category: 'Filament', cost: 2.00, unit: 'per 100g', onHand: 800, notes: '800g spool @ $15.99' },
+
+  // Support Material
+  { id: 'support-bambu-100g', name: 'Support Material Bambu (100g)', type: 'Support', color: 'Natural', category: 'Filament', cost: 5.20, unit: 'per 100g', onHand: 500, notes: '500g spool @ $25.99' },
+
+  // PETG
   { id: 'petg-black-100g', name: 'PETG Black (100g)', type: 'PETG', color: 'Black', category: 'Filament', cost: 2.10, unit: 'per 100g', onHand: 0 },
+
+  // TPU
   { id: 'tpu-black-100g', name: 'TPU Black (100g)', type: 'TPU', color: 'Black', category: 'Filament', cost: 2.40, unit: 'per 100g', onHand: 0 },
+
+  // ABS-GF
   { id: 'abs-gf-bambu-100g', name: 'ABS-GF Bambu (100g)', type: 'ABS-GF', color: 'Bambu', category: 'Filament', cost: 2.40, unit: 'per 100g', onHand: 0 },
   { id: 'abs-gf-red-100g', name: 'ABS-GF Red (100g)', type: 'ABS-GF', color: 'Red', category: 'Filament', cost: 2.39, unit: 'per 100g', onHand: 2000 },
   { id: 'abs-gf-blue-100g', name: 'ABS-GF Blue (100g)', type: 'ABS-GF', color: 'Blue', category: 'Filament', cost: 2.39, unit: 'per 100g', onHand: 2000 },
