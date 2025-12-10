@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { updateDoc, doc } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 import { decrementInventory, getOrder } from '../../lib/orders'
+import { sendOrderConfirmationEmail } from '../../lib/emails'
 import { useCart } from '../../context/CartContext'
 
 function PaymentSuccessContent() {
@@ -62,6 +63,15 @@ function PaymentSuccessContent() {
       const orderDetails = await getOrder(finalOrderId)
       if (orderDetails && orderDetails.orderNumber) {
         setOrderNumber(orderDetails.orderNumber)
+
+        // Send order confirmation email
+        try {
+          await sendOrderConfirmationEmail(orderDetails)
+          console.log('Order confirmation email sent successfully')
+        } catch (emailError) {
+          console.error('Failed to send order confirmation email:', emailError)
+          // Don't fail the whole process if email fails
+        }
       }
 
       // Clear cart and sessionStorage

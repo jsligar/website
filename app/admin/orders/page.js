@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import ProtectedRoute from '../../../components/ProtectedRoute'
-import { getAllOrders, updateOrderStatus, addTrackingNumber } from '../../../lib/orders'
+import { getAllOrders, updateOrderStatus, addTrackingNumber, getOrder } from '../../../lib/orders'
+import { sendOrderConfirmationEmail, sendShippingNotificationEmail, sendDeliveredNotificationEmail } from '../../../lib/emails'
 
 const ORDER_STATUSES = [
   { value: 'pending', label: 'Pending', color: 'bg-yellow-500' },
@@ -42,6 +43,35 @@ function OrdersContent() {
     setUpdatingStatus(true)
     try {
       await updateOrderStatus(orderId, newStatus, notes)
+
+      // Send email notifications based on status change
+      const order = await getOrder(orderId)
+
+      if (order) {
+        try {
+          // Send confirmation email when order is paid
+          if (newStatus === 'paid') {
+            await sendOrderConfirmationEmail(order)
+            console.log('Order confirmation email sent')
+          }
+
+          // Send shipping notification when order is shipped
+          if (newStatus === 'shipped' && order.tracking) {
+            await sendShippingNotificationEmail(order)
+            console.log('Shipping notification email sent')
+          }
+
+          // Send delivered notification
+          if (newStatus === 'delivered') {
+            await sendDeliveredNotificationEmail(order)
+            console.log('Delivery notification email sent')
+          }
+        } catch (emailError) {
+          console.error('Failed to send email notification:', emailError)
+          // Don't fail the status update if email fails
+        }
+      }
+
       await loadOrders()
       alert(`Order status updated to ${newStatus}`)
     } catch (error) {
@@ -60,8 +90,21 @@ function OrdersContent() {
 
     try {
       await addTrackingNumber(orderId, trackingNumber, carrier)
+
+      // Send shipping notification email
+      const order = await getOrder(orderId)
+      if (order && order.tracking) {
+        try {
+          await sendShippingNotificationEmail(order)
+          console.log('Shipping notification email sent')
+        } catch (emailError) {
+          console.error('Failed to send shipping notification email:', emailError)
+          // Don't fail the tracking update if email fails
+        }
+      }
+
       await loadOrders()
-      alert('Tracking number added successfully')
+      alert('Tracking number added successfully and customer notified via email')
     } catch (error) {
       console.error('Error adding tracking:', error)
       alert('Failed to add tracking: ' + error.message)

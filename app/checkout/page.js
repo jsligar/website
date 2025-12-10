@@ -40,13 +40,16 @@ export default function CheckoutPage() {
     setLoading(true)
 
     try {
+      // Normalize email to lowercase for consistent lookups
+      const normalizedEmail = formData.email.trim().toLowerCase()
+
       // Check if products have Stripe payment links
       const firstProductWithLink = cart.find(item => item.stripePaymentLink)
       const allHaveLinks = cart.every(item => item.stripePaymentLink)
 
       // Get or create customer
       const customer = await getOrCreateCustomer({
-        email: formData.email,
+        email: normalizedEmail,
         firstName: formData.firstName,
         lastName: formData.lastName,
         phone: formData.phone,
@@ -82,7 +85,7 @@ export default function CheckoutPage() {
       const order = await createOrder({
         customerId: customer.id,
         customer: {
-          email: formData.email,
+          email: normalizedEmail,
           firstName: formData.firstName,
           lastName: formData.lastName,
           phone: formData.phone,
@@ -123,7 +126,7 @@ export default function CheckoutPage() {
         // Add success/cancel URLs to payment link if not already there
         const paymentUrl = new URL(firstProductWithLink.stripePaymentLink)
         if (!paymentUrl.searchParams.has('success_url')) {
-          paymentUrl.searchParams.set('prefilled_email', formData.email)
+          paymentUrl.searchParams.set('prefilled_email', normalizedEmail)
         }
 
         // Redirect to Stripe
