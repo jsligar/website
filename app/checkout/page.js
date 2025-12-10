@@ -139,10 +139,9 @@ export default function CheckoutPage() {
         return
       } else {
         // No payment links or mixed - complete order without payment
-        // Decrement inventory
-        for (const item of cart) {
-          await decrementInventory(item.slug, item.quantity)
-        }
+        // SECURITY FIX: Do NOT decrement inventory here!
+        // Inventory will be decremented in payment-success page ONLY after payment confirmed
+        // This prevents inventory loss from abandoned carts or payment failures
 
         // Clear cart
         clearCart()
