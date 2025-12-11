@@ -1,7 +1,7 @@
 [
   {
     "id": "10in-pneu-tire-steel-hub",
-    "name": "10IN PNEU TIRE STEEL HUB",
+    "name": "10in Pneumatic Tire Steel Hub",
     "category": "Tires",
     "type": "",
     "color": "",
@@ -13,7 +13,7 @@
   },
   {
     "id": "13in-pneu-tire-steel-hub",
-    "name": "13IN PNEU TIRE STEEL HUB",
+    "name": "13in Pneumatic Tire Steel Hub",
     "category": "Tires",
     "type": "",
     "color": "",
@@ -265,7 +265,7 @@
   },
   {
     "id": "m8-socket-head-cap-screws-40mm",
-    "name": "M8-1.25 x 40MM Black",
+    "name": "M8-1.25 x 40mm Black Socket Head Cap Screw",
     "category": "Hardware",
     "type": "",
     "color": "",
